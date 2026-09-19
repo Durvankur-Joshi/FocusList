@@ -74,9 +74,9 @@ export function TaskForm({ onAddTask }: TaskFormProps) {
                 setErrorMessage(null);
               }
             }}
-            aria-invalid={errorMessage !== null}
+            aria-invalid={errorMessage ? 'true' : 'false'}
             aria-describedby={errorMessage ? 'task-title-error' : undefined}
-            className="w-full h-10 px-3.5 border rounded-lg text-slate-900 border-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-sm transition-all"
+            className="w-full h-11 sm:h-10 px-3.5 border rounded-lg text-slate-900 border-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-sm transition-all"
           />
         </div>
 
@@ -97,7 +97,7 @@ export function TaskForm({ onAddTask }: TaskFormProps) {
                   setPriority(value);
                 }
               }}
-              className="h-10 px-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer transition-all"
+              className="h-11 sm:h-10 px-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer transition-all min-w-[90px]"
             >
               {TASK_PRIORITIES.map((p) => (
                 <option key={p} value={p}>
@@ -109,7 +109,7 @@ export function TaskForm({ onAddTask }: TaskFormProps) {
 
           <button
             type="submit"
-            className="h-10 px-4 sm:px-5 inline-flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 cursor-pointer shadow-xs shrink-0"
+            className="h-11 sm:h-10 px-4 sm:px-5 flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 cursor-pointer shadow-xs shrink-0"
           >
             <Plus className="w-4 h-4 shrink-0" aria-hidden="true" />
             <span>Add Task</span>

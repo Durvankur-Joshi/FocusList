@@ -53,7 +53,7 @@ export function TaskFilters({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search tasks by title..."
-            className="w-full h-9.5 pl-9 pr-3.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+            className="w-full h-10 sm:h-9.5 pl-9 pr-3.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
           />
         </div>
       </div>
@@ -78,7 +78,7 @@ export function TaskFilters({
                   type="button"
                   onClick={() => onStatusChange(s)}
                   aria-pressed={isActive}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                  className={`px-2.5 sm:px-3 py-1.5 sm:py-1 text-xs font-semibold rounded-md transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 ${
                     isActive
                       ? 'bg-white text-slate-900 shadow-xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
@@ -92,7 +92,7 @@ export function TaskFilters({
         </div>
 
         {/* Priority dropdown & Clear filters */}
-        <div className="flex items-center justify-between sm:justify-end gap-2.5">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2.5">
           <div className="flex items-center gap-1.5">
             <label
               htmlFor="task-priority-filter"
@@ -104,7 +104,7 @@ export function TaskFilters({
               id="task-priority-filter"
               value={priority}
               onChange={(e) => onPriorityChange(e.target.value as PriorityFilter)}
-              className="h-8.5 px-2.5 py-1 border border-slate-300 rounded-lg text-xs font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer transition-all"
+              className="h-9 sm:h-8.5 px-2.5 py-1 border border-slate-300 rounded-lg text-xs font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer transition-all min-w-[85px]"
             >
               {PRIORITY_FILTERS.map((p) => (
                 <option key={p} value={p}>
@@ -119,7 +119,7 @@ export function TaskFilters({
               type="button"
               onClick={onResetFilters}
               aria-label="Clear all filters"
-              className="inline-flex items-center gap-1 h-8.5 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 cursor-pointer"
+              className="inline-flex items-center gap-1 h-9 sm:h-8.5 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
             >
               <RotateCcw className="w-3 h-3 text-slate-500" aria-hidden="true" />
               <span>Clear filters</span>

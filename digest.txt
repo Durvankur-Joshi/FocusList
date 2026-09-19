@@ -1,0 +1,3866 @@
+Directory structure:
+└── FocusList/
+    ├── README.md
+    ├── eslint.config.js
+    ├── index.html
+    ├── package.json
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    ├── tsconfig.test.json
+    ├── vite.config.ts
+    ├── vitest.config.ts
+    ├── src/
+    │   ├── App.tsx
+    │   ├── index.css
+    │   ├── main.tsx
+    │   ├── components/
+    │   │   ├── dashboard/
+    │   │   │   └── TaskStats.tsx
+    │   │   ├── layout/
+    │   │   │   └── Header.tsx
+    │   │   └── tasks/
+    │   │       ├── EmptyState.tsx
+    │   │       ├── TaskFilters.tsx
+    │   │       ├── TaskForm.tsx
+    │   │       ├── TaskItem.tsx
+    │   │       └── TaskList.tsx
+    │   ├── constants/
+    │   │   └── task.ts
+    │   ├── hooks/
+    │   │   ├── useLocalStorage.ts
+    │   │   └── useTasks.ts
+    │   ├── lib/
+    │   │   ├── filters.ts
+    │   │   ├── storage.ts
+    │   │   ├── utils.ts
+    │   │   └── validation.ts
+    │   └── types/
+    │       └── task.ts
+    └── tests/
+        ├── App.test.tsx
+        ├── reliability_and_edge_cases.test.tsx
+        ├── security_and_accessibility.test.tsx
+        ├── setup.ts
+        ├── components/
+        │   ├── Header.test.tsx
+        │   ├── TaskFilters.test.tsx
+        │   ├── TaskForm.test.tsx
+        │   ├── TaskItem.test.tsx
+        │   ├── TaskList.test.tsx
+        │   └── TaskStats.test.tsx
+        ├── hooks/
+        │   ├── useLocalStorage.test.ts
+        │   └── useTasks.test.ts
+        └── lib/
+            ├── filters.test.ts
+            ├── storage.test.ts
+            └── validation.test.ts
+
+================================================
+FILE: README.md
+================================================
+# FocusList
+
+A fast, accessible, frontend-only productivity task manager designed to help you focus on what matters.
+
+## Features
+
+- Create tasks
+- Edit tasks
+- Complete tasks
+- Delete tasks
+- Priority levels (High, Medium, Low)
+- Search by task title
+- Status filters (All, Active, Completed)
+- Priority filters (All, High, Medium, Low)
+- Real-time task statistics (Total, Completed, Pending)
+- localStorage persistence with fault-tolerant parsing
+- Responsive UI across mobile, tablet, and desktop
+- Comprehensive accessibility (ARIA, keyboard navigation, visible focus indicators)
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide React
+- Vitest
+- React Testing Library
+- ESLint
+
+## Run Locally
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start development server:
+
+```bash
+npm run dev
+```
+
+## Verification
+
+Run linter:
+
+```bash
+npm run lint
+```
+
+Run test suite:
+
+```bash
+npm run test
+```
+
+Create production build:
+
+```bash
+npm run build
+```
+
+
+
+================================================
+FILE: eslint.config.js
+================================================
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  { ignores: ['dist', 'node_modules', 'coverage', '.tmp'] },
+  {
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      ecmaVersion: 2023,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+    },
+  },
+);
+
+
+
+================================================
+FILE: index.html
+================================================
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FocusList - A frontend-only productivity task manager. Focus on what matters." />
+    <title>FocusList</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+
+================================================
+FILE: package.json
+================================================
+{
+  "name": "focuslist",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "lucide-react": "^1.47.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.12.0",
+    "jsdom": "^30.1.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1"
+  }
+}
+
+
+
+================================================
+FILE: tsconfig.app.json
+================================================
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Strict Type Checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["src"]
+}
+
+
+
+================================================
+FILE: tsconfig.json
+================================================
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.test.json" }
+  ]
+}
+
+
+
+================================================
+FILE: tsconfig.node.json
+================================================
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Strict Type Checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["vite.config.ts", "vitest.config.ts"]
+}
+
+
+
+================================================
+FILE: tsconfig.test.json
+================================================
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Strict Type Checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["tests", "src"]
+}
+
+
+
+================================================
+FILE: vite.config.ts
+================================================
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
+  ],
+});
+
+
+
+================================================
+FILE: vitest.config.ts
+================================================
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
+    include: ['tests/**/*.{test,spec}.{ts,tsx}'],
+    pool: 'threads',
+  },
+});
+
+
+
+================================================
+FILE: src/App.tsx
+================================================
+import { useState } from 'react';
+import type { StatusFilter, PriorityFilter } from './types/task';
+import { useTasks } from './hooks/useTasks';
+import { filterTasks } from './lib/filters';
+import { Header } from './components/layout/Header';
+import { TaskStats } from './components/dashboard/TaskStats';
+import { TaskForm } from './components/tasks/TaskForm';
+import { TaskFilters } from './components/tasks/TaskFilters';
+import { TaskList } from './components/tasks/TaskList';
+
+export default function App() {
+  const { tasks, addTask, updateTask, toggleTask, deleteTask } = useTasks();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
+
+  const hasActiveFilters =
+    searchQuery.trim() !== '' || statusFilter !== 'all' || priorityFilter !== 'all';
+
+  const filteredTasks = filterTasks(tasks, {
+    search: searchQuery,
+    status: statusFilter,
+    priority: priorityFilter,
+  });
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setPriorityFilter('all');
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-slate-900 selection:text-white">
+      <main className="max-w-2xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-7">
+        {/* Header */}
+        <Header />
+
+        {/* Task Statistics - Always reflects total underlying task collection */}
+        <section aria-label="Task statistics section">
+          <TaskStats tasks={tasks} />
+        </section>
+
+        {/* Add Task Form */}
+        <section aria-label="Add task section">
+          <TaskForm onAddTask={addTask} />
+        </section>
+
+        {/* Filters & Search */}
+        <section aria-label="Task filters section">
+          <TaskFilters
+            search={searchQuery}
+            status={statusFilter}
+            priority={priorityFilter}
+            hasActiveFilters={hasActiveFilters}
+            onSearchChange={setSearchQuery}
+            onStatusChange={setStatusFilter}
+            onPriorityChange={setPriorityFilter}
+            onResetFilters={handleResetFilters}
+          />
+        </section>
+
+        {/* Task List */}
+        <section aria-label="Task list section">
+          <TaskList
+            tasks={filteredTasks}
+            totalTasksCount={tasks.length}
+            hasActiveFilters={hasActiveFilters}
+            onResetFilters={handleResetFilters}
+            onToggle={toggleTask}
+            onUpdate={updateTask}
+            onDelete={deleteTask}
+          />
+        </section>
+      </main>
+    </div>
+  );
+}
+
+
+
+================================================
+FILE: src/index.css
+================================================
+@import "tailwindcss";
+
+
+
+================================================
+FILE: src/main.tsx
+================================================
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+
+
+
+================================================
+FILE: src/components/dashboard/TaskStats.tsx
+================================================
+import { ListTodo, CheckCircle2, Clock } from 'lucide-react';
+import type { Task } from '../../types/task';
+
+export interface TaskStatsProps {
+  tasks: Task[];
+}
+
+export function TaskStats({ tasks }: TaskStatsProps) {
+  const total = tasks.length;
+  const completed = tasks.filter((t) => t.completed).length;
+  const pending = tasks.filter((t) => !t.completed).length;
+
+  return (
+    <div
+      role="region"
+      aria-label="Task statistics"
+      className="grid grid-cols-3 gap-3 sm:gap-4"
+    >
+      {/* Total Tasks */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs hover:border-slate-300 transition-colors">
+        <div className="flex items-center justify-between gap-1">
+          <dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
+            Total
+          </dt>
+          <ListTodo className="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" />
+        </div>
+        <dd
+          className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900"
+          aria-label={`Total tasks: ${total}`}
+        >
+          {total}
+        </dd>
+      </div>
+
+      {/* Completed Tasks */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-white border border-emerald-200/80 shadow-xs hover:border-emerald-300 transition-colors">
+        <div className="flex items-center justify-between gap-1">
+          <dt className="text-xs font-semibold text-emerald-700 uppercase tracking-wider truncate">
+            Completed
+          </dt>
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />
+        </div>
+        <dd
+          className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-emerald-700"
+          aria-label={`Completed tasks: ${completed}`}
+        >
+          {completed}
+        </dd>
+      </div>
+
+      {/* Pending Tasks */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-white border border-amber-200/80 shadow-xs hover:border-amber-300 transition-colors">
+        <div className="flex items-center justify-between gap-1">
+          <dt className="text-xs font-semibold text-amber-700 uppercase tracking-wider truncate">
+            Pending
+          </dt>
+          <Clock className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
+        </div>
+        <dd
+          className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-amber-700"
+          aria-label={`Pending tasks: ${pending}`}
+        >
+          {pending}
+        </dd>
+      </div>
+    </div>
+  );
+}
+
+
+
+================================================
+FILE: src/components/layout/Header.tsx
+================================================
+import { Calendar } from 'lucide-react';
+
+export function Header() {
+  const currentDate = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date());
+
+  return (
+    <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div className="space-y-1">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
+          FocusList
+        </h1>
+        <p className="text-sm sm:text-base text-slate-600 font-medium">
+          Focus on what matters.
+        </p>
+      </div>
+
+      <div
+        className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-600"
+        aria-label={`Today is ${currentDate}`}
+      >
+        <Calendar className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+        <span>{currentDate}</span>
+      </div>
+    </header>
+  );
+}
+
+
+
+================================================
+FILE: src/components/tasks/EmptyState.tsx
+================================================
+import { ClipboardList } from 'lucide-react';
+
+export function EmptyState() {
+  return (
+    <div
+      role="status"
+      className="flex flex-col items-center justify-center text-center py-12 px-4 rounded-xl border border-dashed border-slate-300 bg-white/70 text-slate-600 shadow-xs"
+    >
+      <div className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+        <ClipboardList className="w-5 h-5" aria-hidden="true" />
+      </div>
+      <h2 className="text-base font-semibold text-slate-800">No tasks yet</h2>
+      <p className="mt-1 text-xs sm:text-sm text-slate-500 max-w-sm">
+        Add your first task above to start organizing your work.
+      </p>
+    </div>
+  );
+}
+
+
+
+================================================
+FILE: src/components/tasks/TaskFilters.tsx
+================================================
+import { Search, RotateCcw } from 'lucide-react';
+import type { StatusFilter, PriorityFilter } from '../../types/task';
+import {
+  STATUS_FILTERS,
+  STATUS_FILTER_LABELS,
+  PRIORITY_FILTERS,
+  PRIORITY_FILTER_LABELS,
+} from '../../constants/task';
+
+export interface TaskFiltersProps {
+  search: string;
+  status: StatusFilter;
+  priority: PriorityFilter;
+  hasActiveFilters: boolean;
+  onSearchChange: (search: string) => void;
+  onStatusChange: (status: StatusFilter) => void;
+  onPriorityChange: (priority: PriorityFilter) => void;
+  onResetFilters: () => void;
+}
+
+export function TaskFilters({
+  search,
+  status,
+  priority,
+  hasActiveFilters,
+  onSearchChange,
+  onStatusChange,
+  onPriorityChange,
+  onResetFilters,
+}: TaskFiltersProps) {
+  return (
+    <div
+      role="search"
+      aria-label="Task filters"
+      className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-xs space-y-3.5 transition-shadow hover:shadow-sm"
+    >
+      {/* Search Input with Icon */}
+      <div className="space-y-1">
+        <label
+          htmlFor="task-search"
+          className="block text-xs font-semibold text-slate-700 uppercase tracking-wider"
+        >
+          Search Tasks
+        </label>
+        <div className="relative">
+          <Search
+            className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            aria-hidden="true"
+          />
+          <input
+            id="task-search"
+            type="search"
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search tasks by title..."
+            className="w-full h-9.5 pl-9 pr-3.5 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+          />
+        </div>
+      </div>
+
+      {/* Filters Row: Status segmented controls & Priority dropdown */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1 border-t border-slate-100">
+        {/* Status segmented group */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-slate-500 uppercase tracking-wider mr-0.5">
+            Status:
+          </span>
+          <div
+            role="group"
+            aria-label="Filter by status"
+            className="inline-flex rounded-lg p-1 bg-slate-100 border border-slate-200/80"
+          >
+            {STATUS_FILTERS.map((s) => {
+              const isActive = status === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => onStatusChange(s)}
+                  aria-pressed={isActive}
+                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  {STATUS_FILTER_LABELS[s]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Priority dropdown & Clear filters */}
+        <div className="flex items-center justify-between sm:justify-end gap-2.5">
+          <div className="flex items-center gap-1.5">
+            <label
+              htmlFor="task-priority-filter"
+              className="text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap"
+            >
+              Priority:
+            </label>
+            <select
+              id="task-priority-filter"
+              value={priority}
+              onChange={(e) => onPriorityChange(e.target.value as PriorityFilter)}
+              className="h-8.5 px-2.5 py-1 border border-slate-300 rounded-lg text-xs font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer transition-all"
+            >
+              {PRIORITY_FILTERS.map((p) => (
+                <option key={p} value={p}>
+                  {PRIORITY_FILTER_LABELS[p]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={onResetFilters}
+              aria-label="Clear all filters"
+              className="inline-flex items-center gap-1 h-8.5 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3 text-slate-500" aria-hidden="true" />
+              <span>Clear filters</span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+================================================
+FILE: src/components/tasks/TaskForm.tsx
+================================================
+import { useState, useRef, type FormEvent } from 'react';
+import { Plus } from 'lucide-react';
+import type { CreateTaskInput, Priority } from '../../types/task';
+import {
+  TASK_PRIORITIES,
+  PRIORITY_LABELS,
+  DEFAULT_PRIORITY,
+  TASK_LIMITS,
+} from '../../constants/task';
+import { validateTaskTitle, isValidPriority } from '../../lib/validation';
+
+export interface TaskFormProps {
+  onAddTask: (input: CreateTaskInput) => void;
+}
+
+export function TaskForm({ onAddTask }: TaskFormProps) {
+  const [title, setTitle] = useState('');
+  const [priority, setPriority] = useState<Priority>(DEFAULT_PRIORITY);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const titleValidation = validateTaskTitle(title);
+    if (!titleValidation.isValid || !titleValidation.sanitized) {
+      setErrorMessage(titleValidation.error || 'Please enter a valid task title.');
+      titleInputRef.current?.focus();
+      return;
+    }
+
+    if (!isValidPriority(priority)) {
+      setErrorMessage('Please select a valid priority.');
+      return;
+    }
+
+    setErrorMessage(null);
+    onAddTask({
+      title: titleValidation.sanitized,
+      priority,
+    });
+
+    setTitle('');
+    setPriority(DEFAULT_PRIORITY);
+    titleInputRef.current?.focus();
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-4 sm:p-5 rounded-xl shadow-xs border border-slate-200/90 space-y-3 transition-shadow hover:shadow-sm"
+      aria-label="Create new task"
+      noValidate
+    >
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        <div className="flex-1 space-y-1">
+          <label
+            htmlFor="task-title"
+            className="block text-xs font-semibold text-slate-700 uppercase tracking-wider"
+          >
+            Task Title
+          </label>
+          <input
+            id="task-title"
+            ref={titleInputRef}
+            type="text"
+            value={title}
+            maxLength={TASK_LIMITS.MAX_TITLE_LENGTH}
+            placeholder="What needs to be done?"
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (errorMessage) {
+                setErrorMessage(null);
+              }
+            }}
+            aria-invalid={errorMessage !== null}
+            aria-describedby={errorMessage ? 'task-title-error' : undefined}
+            className="w-full h-10 px-3.5 border rounded-lg text-slate-900 border-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-sm transition-all"
+          />
+        </div>
+
+        <div className="flex items-end gap-2 shrink-0">
+          <div className="space-y-1">
+            <label
+              htmlFor="task-priority"
+              className="block text-xs font-semibold text-slate-700 uppercase tracking-wider whitespace-nowrap"
+            >
+              Priority:
+            </label>
+            <select
+              id="task-priority"
+              value={priority}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (isValidPriority(value)) {
+                  setPriority(value);
+                }
+              }}
+              className="h-10 px-3 border border-slate-300 rounded-lg text-sm font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer transition-all"
+            >
+              {TASK_PRIORITIES.map((p) => (
+                <option key={p} value={p}>
+                  {PRIORITY_LABELS[p]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="h-10 px-4 sm:px-5 inline-flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-medium text-sm rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 cursor-pointer shadow-xs shrink-0"
+          >
+            <Plus className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span>Add Task</span>
+          </button>
+        </div>
+      </div>
+
+      {errorMessage && (
+        <p
+          id="task-title-error"
+          role="alert"
+          className="text-xs text-rose-600 font-medium pt-0.5 flex items-center gap-1"
+        >
+          <span>{errorMessage}</span>
+        </p>
+      )}
+    </form>
+  );
+}
+
+
+
+================================================
+FILE: src/components/tasks/TaskItem.tsx
+================================================
+import { useState, type FormEvent } from 'react';
+import { Pencil, Trash2, Check } from 'lucide-react';
+import type { Task, Priority, UpdateTaskInput } from '../../types/task';
+import {
+  TASK_PRIORITIES,
+  PRIORITY_LABELS,
+  TASK_LIMITS,
+} from '../../constants/task';
+import { validateTaskTitle, isValidPriority } from '../../lib/validation';
+
+export interface TaskItemProps {
+  task: Task;
+  onToggle: (id: string) => void;
+  onUpdate: (id: string, updates: UpdateTaskInput) => boolean;
+  onDelete: (id: string) => void;
+}
+
+const PRIORITY_BADGE_STYLES: Record<Priority, string> = {
+  high: 'bg-rose-50 text-rose-700 border-rose-200',
+  medium: 'bg-amber-50 text-amber-700 border-amber-200',
+  low: 'bg-blue-50 text-blue-700 border-blue-200',
+};
+
+export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(task.title);
+  const [editPriority, setEditPriority] = useState<Priority>(task.priority);
+  const [editError, setEditError] = useState<string | null>(null);
+
+  const handleStartEdit = () => {
+    setEditTitle(task.title);
+    setEditPriority(task.priority);
+    setEditError(null);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditTitle(task.title);
+    setEditPriority(task.priority);
+    setEditError(null);
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const titleValidation = validateTaskTitle(editTitle);
+    if (!titleValidation.isValid || !titleValidation.sanitized) {
+      setEditError(titleValidation.error || 'Please enter a valid title.');
+      return;
+    }
+
+    if (!isValidPriority(editPriority)) {
+      setEditError('Please select a valid priority.');
+      return;
+    }
+
+    const success = onUpdate(task.id, {
+      title: titleValidation.sanitized,
+      priority: editPriority,
+    });
+
+    if (success) {
+      setIsEditing(false);
+      setEditError(null);
+    } else {
+      setEditError('Failed to update task. Please try again.');
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <li className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm list-none transition-all">
+        <form
+          onSubmit={handleSaveEdit}
+          className="space-y-3"
+          aria-label={`Edit task: ${task.title}`}
+          noValidate
+        >
+          <div className="space-y-1">
+            <label
+              htmlFor={`edit-title-${task.id}`}
+              className="block text-xs font-semibold text-slate-700 uppercase tracking-wider"
+            >
+              Edit Title
+            </label>
+            <input
+              id={`edit-title-${task.id}`}
+              type="text"
+              value={editTitle}
+              maxLength={TASK_LIMITS.MAX_TITLE_LENGTH}
+              onChange={(e) => {
+                setEditTitle(e.target.value);
+                if (editError) {
+                  setEditError(null);
+                }
+              }}
+              aria-label="Edit task title"
+              aria-invalid={editError !== null}
+              aria-describedby={editError ? `edit-title-error-${task.id}` : undefined}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
+            />
+            {editError && (
+              <p
+                id={`edit-title-error-${task.id}`}
+                role="alert"
+                className="text-xs text-rose-600 font-medium pt-0.5"
+              >
+                {editError}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor={`edit-priority-${task.id}`}
+                className="text-xs font-semibold text-slate-600 uppercase tracking-wider"
+              >
+                Priority:
+              </label>
+              <select
+                id={`edit-priority-${task.id}`}
+                value={editPriority}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (isValidPriority(val)) {
+                    setEditPriority(val);
+                  }
+                }}
+                className="h-8 px-2.5 py-0.5 border border-slate-300 rounded-md text-xs font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
+              >
+                {TASK_PRIORITIES.map((p) => (
+                  <option key={p} value={p}>
+                    {PRIORITY_LABELS[p]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                aria-label={`Cancel editing "${task.title}"`}
+                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                aria-label={`Save changes for "${task.title}"`}
+                className="px-3.5 py-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors cursor-pointer shadow-xs"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </form>
+      </li>
+    );
+  }
+
+  return (
+    <li
+      className={`p-3.5 sm:p-4 rounded-xl border transition-all list-none ${
+        task.completed
+          ? 'bg-slate-50/80 border-slate-200 opacity-90'
+          : 'bg-white border-slate-200/90 shadow-xs hover:border-slate-300 hover:shadow-sm'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <input
+            id={`task-toggle-${task.id}`}
+            type="checkbox"
+            checked={task.completed}
+            onChange={() => onToggle(task.id)}
+            aria-label={`Mark "${task.title}" as ${
+              task.completed ? 'incomplete' : 'complete'
+            }`}
+            className="mt-0.5 h-4.5 w-4.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer transition-transform active:scale-95 shrink-0"
+          />
+
+          <div className="flex-1 min-w-0 space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`text-sm font-medium break-words leading-snug transition-colors ${
+                  task.completed
+                    ? 'line-through text-slate-400'
+                    : 'text-slate-900'
+                }`}
+              >
+                {task.title}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+              <span
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${
+                  PRIORITY_BADGE_STYLES[task.priority]
+                }`}
+              >
+                {PRIORITY_LABELS[task.priority]}
+              </span>
+
+              {task.completed && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <Check className="w-3 h-3 text-emerald-600" aria-hidden="true" />
+                  <span>Completed</span>
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0 pt-0.5">
+          <button
+            type="button"
+            onClick={handleStartEdit}
+            aria-label={`Edit task: ${task.title}`}
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-md border border-slate-200 transition-colors cursor-pointer"
+          >
+            <Pencil className="w-3 h-3 text-slate-500" aria-hidden="true" />
+            <span className="hidden sm:inline">Edit</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(task.id)}
+            aria-label={`Delete task: ${task.title}`}
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-rose-600 hover:text-rose-700 bg-rose-50/80 hover:bg-rose-100 rounded-md border border-rose-200/80 transition-colors cursor-pointer"
+          >
+            <Trash2 className="w-3 h-3 text-rose-500" aria-hidden="true" />
+            <span className="hidden sm:inline">Delete</span>
+          </button>
+        </div>
+      </div>
+    </li>
+  );
+}
+
+
+
+================================================
+FILE: src/components/tasks/TaskList.tsx
+================================================
+import { Search, RotateCcw } from 'lucide-react';
+import type { Task, UpdateTaskInput } from '../../types/task';
+import { TaskItem } from './TaskItem';
+import { EmptyState } from './EmptyState';
+
+export interface TaskListProps {
+  tasks: Task[];
+  totalTasksCount?: number;
+  hasActiveFilters?: boolean;
+  onResetFilters?: () => void;
+  onToggle: (id: string) => void;
+  onUpdate: (id: string, updates: UpdateTaskInput) => boolean;
+  onDelete: (id: string) => void;
+}
+
+export function TaskList({
+  tasks,
+  totalTasksCount = tasks.length,
+  hasActiveFilters = false,
+  onResetFilters,
+  onToggle,
+  onUpdate,
+  onDelete,
+}: TaskListProps) {
+  if (tasks.length === 0) {
+    if (totalTasksCount > 0 && hasActiveFilters) {
+      return (
+        <div
+          role="status"
+          className="flex flex-col items-center justify-center text-center py-12 px-4 rounded-xl border border-dashed border-slate-300 bg-white/70 text-slate-600 shadow-xs space-y-3"
+        >
+          <div className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+            <Search className="w-5 h-5" aria-hidden="true" />
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-slate-800">No tasks match your filters</h2>
+            <p className="mt-1 text-xs sm:text-sm text-slate-500 max-w-sm">
+              Try adjusting your search query or filter criteria.
+            </p>
+          </div>
+          {onResetFilters && (
+            <button
+              type="button"
+              onClick={onResetFilters}
+              aria-label="Clear all active filters"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-300 cursor-pointer shadow-xs"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-500" aria-hidden="true" />
+              <span>Clear filters</span>
+            </button>
+          )}
+        </div>
+      );
+    }
+    return <EmptyState />;
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          Tasks ({tasks.length})
+        </h2>
+      </div>
+
+      <ul
+        className="space-y-2.5 p-0 m-0"
+        aria-label="Tasks"
+      >
+        {tasks.map((task) => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            onToggle={onToggle}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
+
+================================================
+FILE: src/constants/task.ts
+================================================
+import type { Priority, StatusFilter, PriorityFilter } from '../types/task';
+
+export const TASK_PRIORITIES: readonly Priority[] = ['high', 'medium', 'low'] as const;
+
+export const DEFAULT_PRIORITY: Priority = 'medium';
+
+export const PRIORITY_LABELS: Record<Priority, string> = {
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+};
+
+export const TASK_STORAGE_KEY = 'focuslist:tasks';
+
+export const TASK_LIMITS = {
+  MIN_TITLE_LENGTH: 1,
+  MAX_TITLE_LENGTH: 200,
+} as const;
+
+export const STATUS_FILTERS: readonly StatusFilter[] = ['all', 'active', 'completed'] as const;
+
+export const STATUS_FILTER_LABELS: Record<StatusFilter, string> = {
+  all: 'All',
+  active: 'Active',
+  completed: 'Completed',
+};
+
+export const PRIORITY_FILTERS: readonly PriorityFilter[] = ['all', 'high', 'medium', 'low'] as const;
+
+export const PRIORITY_FILTER_LABELS: Record<PriorityFilter, string> = {
+  all: 'All',
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low',
+};
+
+
+
+================================================
+FILE: src/hooks/useLocalStorage.ts
+================================================
+import { useState, useCallback } from 'react';
+
+export type SetValue<T> = (value: T | ((prevValue: T) => T)) => void;
+
+function getStorageItem(key: string): string | null {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return null;
+  }
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function setStorageItem(key: string, serializedValue: string): boolean {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return false;
+  }
+  try {
+    window.localStorage.setItem(key, serializedValue);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T | (() => T),
+  validator?: (value: unknown) => value is T
+): [T, SetValue<T>] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    const rawValue = getStorageItem(key);
+    if (rawValue !== null) {
+      try {
+        const parsed: unknown = JSON.parse(rawValue);
+        if (validator) {
+          if (validator(parsed)) {
+            return parsed;
+          }
+        } else {
+          return parsed as T;
+        }
+      } catch {
+        // Corrupted JSON - fall back to initial value
+      }
+    }
+
+    return typeof initialValue === 'function'
+      ? (initialValue as () => T)()
+      : initialValue;
+  });
+
+  const setValue: SetValue<T> = useCallback(
+    (value) => {
+      setStoredValue((currentValue) => {
+        const resolvedValue =
+          typeof value === 'function'
+            ? (value as (prevValue: T) => T)(currentValue)
+            : value;
+
+        try {
+          const serialized = JSON.stringify(resolvedValue);
+          setStorageItem(key, serialized);
+        } catch {
+          // Gracefully ignore serialization errors
+        }
+
+        return resolvedValue;
+      });
+    },
+    [key]
+  );
+
+  return [storedValue, setValue];
+}
+
+
+
+================================================
+FILE: src/hooks/useTasks.ts
+================================================
+import { useCallback } from 'react';
+import type { Task, CreateTaskInput, UpdateTaskInput, Priority } from '../types/task';
+import { TASK_STORAGE_KEY, DEFAULT_PRIORITY } from '../constants/task';
+import { useLocalStorage } from './useLocalStorage';
+import { validateTaskTitle, isValidPriority, isValidTask } from '../lib/validation';
+import { generateId, createTimestamp } from '../lib/utils';
+
+function isValidTaskList(value: unknown): value is Task[] {
+  return Array.isArray(value) && value.every(isValidTask);
+}
+
+export interface UseTasksReturn {
+  tasks: Task[];
+  addTask: (input: CreateTaskInput) => Task | null;
+  updateTask: (id: string, updates: UpdateTaskInput) => boolean;
+  toggleTask: (id: string) => boolean;
+  deleteTask: (id: string) => boolean;
+  clearAllTasks: () => void;
+}
+
+export function useTasks(): UseTasksReturn {
+  const [tasks, setTasks] = useLocalStorage<Task[]>(
+    TASK_STORAGE_KEY,
+    [],
+    isValidTaskList
+  );
+
+  const addTask = useCallback(
+    (input: CreateTaskInput): Task | null => {
+      if (!input || typeof input !== 'object') {
+        return null;
+      }
+
+      const titleValidation = validateTaskTitle(input.title);
+      if (!titleValidation.isValid || !titleValidation.sanitized) {
+        return null;
+      }
+
+      const priority: Priority = input.priority !== undefined ? input.priority : DEFAULT_PRIORITY;
+      if (!isValidPriority(priority)) {
+        return null;
+      }
+
+      const now = createTimestamp();
+      const newTask: Task = {
+        id: generateId(),
+        title: titleValidation.sanitized,
+        priority,
+        completed: false,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      setTasks((prevTasks) => [newTask, ...prevTasks]);
+      return newTask;
+    },
+    [setTasks]
+  );
+
+  const updateTask = useCallback(
+    (id: string, updates: UpdateTaskInput): boolean => {
+      if (!id || typeof id !== 'string' || !updates || typeof updates !== 'object') {
+        return false;
+      }
+
+      const target = tasks.find((t) => t.id === id);
+      if (!target) {
+        return false;
+      }
+
+      let hasValidUpdate = false;
+      let sanitizedTitle: string | undefined;
+      let validatedPriority: Priority | undefined;
+      let validatedCompleted: boolean | undefined;
+
+      if (updates.title !== undefined) {
+        const titleValidation = validateTaskTitle(updates.title);
+        if (!titleValidation.isValid || !titleValidation.sanitized) {
+          return false;
+        }
+        sanitizedTitle = titleValidation.sanitized;
+        hasValidUpdate = true;
+      }
+
+      if (updates.priority !== undefined) {
+        if (!isValidPriority(updates.priority)) {
+          return false;
+        }
+        validatedPriority = updates.priority;
+        hasValidUpdate = true;
+      }
+
+      if (updates.completed !== undefined) {
+        if (typeof updates.completed !== 'boolean') {
+          return false;
+        }
+        validatedCompleted = updates.completed;
+        hasValidUpdate = true;
+      }
+
+      if (!hasValidUpdate) {
+        return false;
+      }
+
+      const now = createTimestamp();
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => {
+          if (task.id !== id) {
+            return task;
+          }
+          return {
+            ...task,
+            ...(sanitizedTitle !== undefined ? { title: sanitizedTitle } : {}),
+            ...(validatedPriority !== undefined ? { priority: validatedPriority } : {}),
+            ...(validatedCompleted !== undefined ? { completed: validatedCompleted } : {}),
+            updatedAt: now,
+          };
+        })
+      );
+
+      return true;
+    },
+    [tasks, setTasks]
+  );
+
+  const toggleTask = useCallback(
+    (id: string): boolean => {
+      if (!id || typeof id !== 'string') {
+        return false;
+      }
+
+      const target = tasks.find((t) => t.id === id);
+      if (!target) {
+        return false;
+      }
+
+      const now = createTimestamp();
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id
+            ? {
+                ...task,
+                completed: !task.completed,
+                updatedAt: now,
+              }
+            : task
+        )
+      );
+
+      return true;
+    },
+    [tasks, setTasks]
+  );
+
+  const deleteTask = useCallback(
+    (id: string): boolean => {
+      if (!id || typeof id !== 'string') {
+        return false;
+      }
+
+      const target = tasks.find((t) => t.id === id);
+      if (!target) {
+        return false;
+      }
+
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+      return true;
+    },
+    [tasks, setTasks]
+  );
+
+  const clearAllTasks = useCallback((): void => {
+    setTasks([]);
+  }, [setTasks]);
+
+  return {
+    tasks,
+    addTask,
+    updateTask,
+    toggleTask,
+    deleteTask,
+    clearAllTasks,
+  };
+}
+
+
+
+================================================
+FILE: src/lib/filters.ts
+================================================
+import type { Task, TaskFilters, StatusFilter, PriorityFilter } from '../types/task';
+
+const VALID_STATUSES: readonly StatusFilter[] = ['all', 'active', 'completed'] as const;
+const VALID_PRIORITIES: readonly PriorityFilter[] = ['all', 'high', 'medium', 'low'] as const;
+
+export function filterTasks(tasks: Task[], filters: TaskFilters): Task[] {
+  if (!Array.isArray(tasks)) {
+    return [];
+  }
+
+  // Defensively normalize search input
+  const normalizedQuery =
+    typeof filters?.search === 'string' ? filters.search.trim().toLowerCase() : '';
+
+  // Defensively normalize status filter
+  const normalizedStatus =
+    filters && VALID_STATUSES.includes(filters.status) ? filters.status : 'all';
+
+  // Defensively normalize priority filter
+  const normalizedPriority =
+    filters && VALID_PRIORITIES.includes(filters.priority) ? filters.priority : 'all';
+
+  return tasks.filter((task) => {
+    // 1. Search filter (safe plain text substring match on task title)
+    if (normalizedQuery !== '' && !task.title.toLowerCase().includes(normalizedQuery)) {
+      return false;
+    }
+
+    // 2. Status filter
+    if (normalizedStatus === 'active' && task.completed) {
+      return false;
+    }
+    if (normalizedStatus === 'completed' && !task.completed) {
+      return false;
+    }
+
+    // 3. Priority filter
+    if (normalizedPriority !== 'all' && task.priority !== normalizedPriority) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+
+
+================================================
+FILE: src/lib/storage.ts
+================================================
+import type { Task } from '../types/task';
+import { TASK_STORAGE_KEY } from '../constants/task';
+import { validateTasks } from './validation';
+
+export function isLocalStorageAvailable(): boolean {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return false;
+  }
+
+  try {
+    const testKey = '__focuslist_storage_test__';
+    window.localStorage.setItem(testKey, '1');
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function loadTasks(): Task[] {
+  if (!isLocalStorageAvailable()) {
+    return [];
+  }
+
+  try {
+    const rawData = window.localStorage.getItem(TASK_STORAGE_KEY);
+    if (rawData === null) {
+      return [];
+    }
+
+    const parsed: unknown = JSON.parse(rawData);
+    return validateTasks(parsed);
+  } catch {
+    return [];
+  }
+}
+
+export function saveTasks(tasks: Task[]): boolean {
+  if (!isLocalStorageAvailable()) {
+    return false;
+  }
+
+  try {
+    const validated = validateTasks(tasks);
+    if (validated.length !== tasks.length) {
+      return false;
+    }
+
+    window.localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(validated));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function clearTasks(): boolean {
+  if (!isLocalStorageAvailable()) {
+    return false;
+  }
+
+  try {
+    window.localStorage.removeItem(TASK_STORAGE_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+
+
+================================================
+FILE: src/lib/utils.ts
+================================================
+export function generateId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 11)}`;
+}
+
+export function createTimestamp(): string {
+  return new Date().toISOString();
+}
+
+
+
+================================================
+FILE: src/lib/validation.ts
+================================================
+import type { Priority, Task } from '../types/task';
+import { TASK_LIMITS, TASK_PRIORITIES } from '../constants/task';
+
+export interface TitleValidationResult {
+  isValid: boolean;
+  error?: string;
+  sanitized?: string;
+}
+
+export function isValidPriority(value: unknown): value is Priority {
+  return typeof value === 'string' && (TASK_PRIORITIES as readonly string[]).includes(value);
+}
+
+export function isValidId(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+export function isValidTimestamp(value: unknown): value is string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return false;
+  }
+  const timestamp = Date.parse(value);
+  return !Number.isNaN(timestamp);
+}
+
+export function validateTaskTitle(value: unknown): TitleValidationResult {
+  if (typeof value !== 'string') {
+    return {
+      isValid: false,
+      error: 'Task title must be a string.',
+    };
+  }
+
+  const trimmed = value.trim();
+
+  if (trimmed.length < TASK_LIMITS.MIN_TITLE_LENGTH) {
+    return {
+      isValid: false,
+      error: 'Task title cannot be empty or whitespace only.',
+    };
+  }
+
+  if (trimmed.length > TASK_LIMITS.MAX_TITLE_LENGTH) {
+    return {
+      isValid: false,
+      error: `Task title must not exceed ${TASK_LIMITS.MAX_TITLE_LENGTH} characters.`,
+    };
+  }
+
+  return {
+    isValid: true,
+    sanitized: trimmed,
+  };
+}
+
+export function isValidTask(value: unknown): value is Task {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const record = value as Record<string, unknown>;
+
+  if (!isValidId(record['id'])) {
+    return false;
+  }
+
+  if (!validateTaskTitle(record['title']).isValid) {
+    return false;
+  }
+
+  if (!isValidPriority(record['priority'])) {
+    return false;
+  }
+
+  if (typeof record['completed'] !== 'boolean') {
+    return false;
+  }
+
+  if (!isValidTimestamp(record['createdAt'])) {
+    return false;
+  }
+
+  if (!isValidTimestamp(record['updatedAt'])) {
+    return false;
+  }
+
+  return true;
+}
+
+export function validateTasks(value: unknown): Task[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const allValid = value.every(isValidTask);
+  if (!allValid) {
+    return [];
+  }
+
+  return value;
+}
+
+
+
+================================================
+FILE: src/types/task.ts
+================================================
+export type Priority = 'high' | 'medium' | 'low';
+
+export interface Task {
+  id: string;
+  title: string;
+  priority: Priority;
+  completed: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTaskInput {
+  title: string;
+  priority?: Priority;
+}
+
+export interface UpdateTaskInput {
+  title?: string;
+  priority?: Priority;
+  completed?: boolean;
+}
+
+export type StatusFilter = 'all' | 'active' | 'completed';
+
+export type PriorityFilter = 'all' | Priority;
+
+export interface TaskFilters {
+  search: string;
+  status: StatusFilter;
+  priority: PriorityFilter;
+}
+
+
+
+
+================================================
+FILE: tests/App.test.tsx
+================================================
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen, fireEvent, within } from '@testing-library/react';
+import App from '../src/App';
+
+describe('FocusList App Integration', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  const createTask = (title: string, priority: 'high' | 'medium' | 'low' = 'medium') => {
+    const titleInput = screen.getByLabelText(/^task title$/i);
+    const form = screen.getByRole('form', { name: /create new task/i });
+    const prioritySelect = within(form).getByLabelText(/priority:/i);
+    const addBtn = screen.getByRole('button', { name: /add task/i });
+
+    fireEvent.change(titleInput, { target: { value: title } });
+    fireEvent.change(prioritySelect, { target: { value: priority } });
+    fireEvent.click(addBtn);
+  };
+
+  it('renders header, tagline, and empty state initially', () => {
+    render(<App />);
+
+    expect(screen.getByRole('heading', { name: 'FocusList', level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('Focus on what matters.')).toBeInTheDocument();
+    expect(screen.getByText(/no tasks yet/i)).toBeInTheDocument();
+
+    // Initial statistics
+    expect(screen.getByLabelText(/total tasks: 0/i)).toHaveTextContent('0');
+    expect(screen.getByLabelText(/completed tasks: 0/i)).toHaveTextContent('0');
+    expect(screen.getByLabelText(/pending tasks: 0/i)).toHaveTextContent('0');
+  });
+
+  it('performs full task lifecycle: create, toggle, edit, and delete', () => {
+    render(<App />);
+
+    // 1. Create a new task
+    createTask('Buy groceries', 'high');
+
+    expect(screen.queryByText(/no tasks yet/i)).not.toBeInTheDocument();
+
+    const taskList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(taskList).getByText('Buy groceries')).toBeInTheDocument();
+    expect(within(taskList).getByText('High')).toBeInTheDocument();
+
+    // Statistics update
+    expect(screen.getByLabelText(/total tasks: 1/i)).toHaveTextContent('1');
+    expect(screen.getByLabelText(/pending tasks: 1/i)).toHaveTextContent('1');
+    expect(screen.getByLabelText(/completed tasks: 0/i)).toHaveTextContent('0');
+
+    // 2. Toggle completion
+    const toggleCheckbox = screen.getByRole('checkbox', {
+      name: /mark "buy groceries" as complete/i,
+    });
+    fireEvent.click(toggleCheckbox);
+
+    expect(within(taskList).getByText('Completed')).toBeInTheDocument();
+    expect(toggleCheckbox).toBeChecked();
+
+    // Statistics update after toggle
+    expect(screen.getByLabelText(/total tasks: 1/i)).toHaveTextContent('1');
+    expect(screen.getByLabelText(/pending tasks: 0/i)).toHaveTextContent('0');
+    expect(screen.getByLabelText(/completed tasks: 1/i)).toHaveTextContent('1');
+
+    // 3. Edit the task
+    const editBtn = screen.getByRole('button', { name: /edit task: buy groceries/i });
+    fireEvent.click(editBtn);
+
+    const editForm = screen.getByRole('form', { name: /edit task: buy groceries/i });
+    const editInput = within(editForm).getByLabelText(/edit task title/i);
+    const editSelect = within(editForm).getByLabelText(/priority:/i);
+    const saveBtn = within(editForm).getByRole('button', { name: /save changes/i });
+
+    fireEvent.change(editInput, { target: { value: 'Buy organic groceries' } });
+    fireEvent.change(editSelect, { target: { value: 'medium' } });
+    fireEvent.click(saveBtn);
+
+    expect(within(taskList).getByText('Buy organic groceries')).toBeInTheDocument();
+    expect(within(taskList).getByText('Medium')).toBeInTheDocument();
+
+    // 4. Delete the task
+    const deleteBtn = screen.getByRole('button', {
+      name: /delete task: buy organic groceries/i,
+    });
+    fireEvent.click(deleteBtn);
+
+    expect(screen.queryByText('Buy organic groceries')).not.toBeInTheDocument();
+    expect(screen.getByText(/no tasks yet/i)).toBeInTheDocument();
+
+    // Statistics update after delete
+    expect(screen.getByLabelText(/total tasks: 0/i)).toHaveTextContent('0');
+  });
+
+  it('filters tasks by search, status, and priority while preserving global statistics', () => {
+    render(<App />);
+
+    createTask('Alpha Project plan', 'high');
+    createTask('Beta Project audit', 'medium');
+    createTask('Gamma maintenance', 'low');
+
+    // Mark 'Beta Project audit' as completed
+    const betaToggle = screen.getByRole('checkbox', {
+      name: /mark "beta project audit" as complete/i,
+    });
+    fireEvent.click(betaToggle);
+
+    // Verify global stats: Total = 3, Completed = 1, Pending = 2
+    expect(screen.getByLabelText(/total tasks: 3/i)).toHaveTextContent('3');
+    expect(screen.getByLabelText(/completed tasks: 1/i)).toHaveTextContent('1');
+    expect(screen.getByLabelText(/pending tasks: 2/i)).toHaveTextContent('2');
+
+    // --- SEARCH FILTER ---
+    const searchInput = screen.getByLabelText(/search tasks/i);
+    fireEvent.change(searchInput, { target: { value: 'project' } });
+
+    const taskList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(taskList).getByText('Alpha Project plan')).toBeInTheDocument();
+    expect(within(taskList).getByText('Beta Project audit')).toBeInTheDocument();
+    expect(within(taskList).queryByText('Gamma maintenance')).not.toBeInTheDocument();
+
+    // Stats MUST remain total underlying counts (3, 1, 2)
+    expect(screen.getByLabelText(/total tasks: 3/i)).toHaveTextContent('3');
+
+    // --- STATUS FILTER ---
+    const activeBtn = screen.getByRole('button', { name: /^active$/i });
+    fireEvent.click(activeBtn);
+
+    // Both search 'project' AND status 'active' => only 'Alpha Project plan'
+    expect(within(taskList).getByText('Alpha Project plan')).toBeInTheDocument();
+    expect(within(taskList).queryByText('Beta Project audit')).not.toBeInTheDocument();
+
+    // --- PRIORITY FILTER ---
+    const filterSection = screen.getByRole('search', { name: /task filters/i });
+    const prioritySelect = within(filterSection).getByLabelText(/priority:/i);
+    fireEvent.change(prioritySelect, { target: { value: 'medium' } });
+
+    // Combined: 'project' + 'active' + 'medium' => 0 matches (Alpha is high)
+    expect(screen.getByText(/no tasks match your filters/i)).toBeInTheDocument();
+
+    // --- CLEAR FILTERS BUTTON IN EMPTY STATE ---
+    const clearInEmptyState = screen.getByRole('button', {
+      name: /clear all active filters/i,
+    });
+    fireEvent.click(clearInEmptyState);
+
+    // All 3 tasks should reappear
+    const restoredTaskList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(restoredTaskList).getByText('Alpha Project plan')).toBeInTheDocument();
+    expect(within(restoredTaskList).getByText('Beta Project audit')).toBeInTheDocument();
+    expect(within(restoredTaskList).getByText('Gamma maintenance')).toBeInTheDocument();
+    expect(searchInput).toHaveValue('');
+  });
+});
+
+
+
+================================================
+FILE: tests/reliability_and_edge_cases.test.tsx
+================================================
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent, within } from '@testing-library/react';
+import App from '../src/App';
+import { TASK_LIMITS } from '../src/constants/task';
+import { validateTaskTitle } from '../src/lib/validation';
+
+describe('Phase 6 Reliability & Edge Cases Suite', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  const createTask = (title: string, priority: 'high' | 'medium' | 'low' = 'medium') => {
+    const form = screen.getByRole('form', { name: /create new task/i });
+    const input = within(form).getByLabelText(/^task title$/i);
+    const select = within(form).getByLabelText(/^priority:$/i);
+    const submitBtn = within(form).getByRole('button', { name: /add task/i });
+
+    fireEvent.change(input, { target: { value: title } });
+    fireEvent.change(select, { target: { value: priority } });
+    fireEvent.click(submitBtn);
+  };
+
+  // 1. Duplicate Title Isolation
+  it('1. ensures duplicate task titles maintain distinct IDs and isolated state transitions', () => {
+    render(<App />);
+
+    // Create two tasks with the EXACT same title
+    createTask('Same Title Task', 'high');
+    createTask('Same Title Task', 'low');
+
+    const taskList = screen.getByRole('list', { name: /tasks/i });
+    const listItems = within(taskList).getAllByRole('listitem');
+    expect(listItems).toHaveLength(2);
+
+    // Get checkboxes for both
+    const checkboxes = within(taskList).getAllByRole('checkbox');
+    expect(checkboxes).toHaveLength(2);
+    expect(checkboxes[0]).not.toBeChecked();
+    expect(checkboxes[1]).not.toBeChecked();
+
+    // Toggle ONLY the first task
+    fireEvent.click(checkboxes[0]!);
+    expect(checkboxes[0]).toBeChecked();
+    expect(checkboxes[1]).not.toBeChecked();
+
+    // Edit ONLY the second task
+    const editButtons = within(taskList).getAllByRole('button', { name: /edit task/i });
+    expect(editButtons).toHaveLength(2);
+
+    fireEvent.click(editButtons[1]!);
+    const editInput = screen.getByLabelText(/edit task title/i);
+    const saveBtn = screen.getByRole('button', { name: /save changes/i });
+
+    fireEvent.change(editInput, { target: { value: 'Renamed Second Task' } });
+    fireEvent.click(saveBtn);
+
+    // Verify first task kept original title and second was renamed
+    expect(within(taskList).getByText('Same Title Task')).toBeInTheDocument();
+    expect(within(taskList).getByText('Renamed Second Task')).toBeInTheDocument();
+
+    // Delete the first task
+    const deleteFirst = within(taskList).getByRole('button', {
+      name: 'Delete task: Same Title Task',
+    });
+    fireEvent.click(deleteFirst);
+
+    // Second task remains
+    expect(within(taskList).queryByText('Same Title Task')).not.toBeInTheDocument();
+    expect(within(taskList).getByText('Renamed Second Task')).toBeInTheDocument();
+  });
+
+  // 2. Multi-Task Isolation & Batch Operations
+  it('2. ensures multiple task operations affect only the targeted task', () => {
+    render(<App />);
+
+    createTask('Task 1', 'high');
+    createTask('Task 2', 'medium');
+    createTask('Task 3', 'low');
+    createTask('Task 4', 'medium');
+    createTask('Task 5', 'high');
+
+    const taskList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(taskList).getAllByRole('listitem')).toHaveLength(5);
+
+    // Toggle Task 2
+    const toggleTask2 = within(taskList).getByRole('checkbox', {
+      name: 'Mark "Task 2" as complete',
+    });
+    fireEvent.click(toggleTask2);
+    expect(toggleTask2).toBeChecked();
+
+    // Delete Task 3
+    const deleteTask3 = within(taskList).getByRole('button', {
+      name: 'Delete task: Task 3',
+    });
+    fireEvent.click(deleteTask3);
+
+    // Edit Task 4
+    const editTask4 = within(taskList).getByRole('button', {
+      name: 'Edit task: Task 4',
+    });
+    fireEvent.click(editTask4);
+
+    const editInput = screen.getByLabelText(/edit task title/i);
+    const saveBtn = screen.getByRole('button', { name: /save changes/i });
+    fireEvent.change(editInput, { target: { value: 'Task 4 Modified' } });
+    fireEvent.click(saveBtn);
+
+    // Verify final state: Tasks 1 and 5 untouched, Task 2 completed, Task 3 deleted, Task 4 modified
+    expect(within(taskList).getByText('Task 1')).toBeInTheDocument();
+    expect(within(taskList).getByText('Task 2')).toBeInTheDocument();
+    expect(within(taskList).queryByText('Task 3')).not.toBeInTheDocument();
+    expect(within(taskList).getByText('Task 4 Modified')).toBeInTheDocument();
+    expect(within(taskList).getByText('Task 5')).toBeInTheDocument();
+  });
+
+  // 3. Special Characters, Emojis, and Boundaries
+  it('3. supports unicode emojis, punctuation, quotes, comparison operators, and exact length boundaries', () => {
+    render(<App />);
+
+    const complexTitles = [
+      'ðŸŽ‰ Launch FocusList v1.0 ðŸš€',
+      'Review "contract" & \'terms\' (urgent)!',
+      'Fix bug: x < 10 && y > 20',
+      'Task #987654 - Section 1.2.3',
+    ];
+
+    for (const title of complexTitles) {
+      createTask(title, 'medium');
+      const taskList = screen.getByRole('list', { name: /tasks/i });
+      expect(within(taskList).getByText(title)).toBeInTheDocument();
+    }
+
+    // Exact max boundary (200 characters)
+    const exactMaxTitle = 'A'.repeat(TASK_LIMITS.MAX_TITLE_LENGTH);
+    createTask(exactMaxTitle, 'low');
+    const taskList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(taskList).getByText(exactMaxTitle)).toBeInTheDocument();
+
+    // Exceeding max boundary (201 characters)
+    const tooLongTitle = 'B'.repeat(TASK_LIMITS.MAX_TITLE_LENGTH + 1);
+    expect(validateTaskTitle(tooLongTitle).isValid).toBe(false);
+  });
+
+  // 4. Persistence Reload Simulation
+  it('4. persists task collection across full component unmount and remount reload cycles', () => {
+    const { unmount } = render(<App />);
+
+    createTask('Persistent Alpha', 'high');
+    createTask('Persistent Beta', 'medium');
+    createTask('Persistent Gamma', 'low');
+
+    // Toggle Beta
+    const betaToggle = screen.getByRole('checkbox', {
+      name: 'Mark "Persistent Beta" as complete',
+    });
+    fireEvent.click(betaToggle);
+
+    // Edit Gamma
+    const gammaEdit = screen.getByRole('button', {
+      name: 'Edit task: Persistent Gamma',
+    });
+    fireEvent.click(gammaEdit);
+
+    const editInput = screen.getByLabelText(/edit task title/i);
+    const saveBtn = screen.getByRole('button', { name: /save changes/i });
+    fireEvent.change(editInput, { target: { value: 'Persistent Gamma Updated' } });
+    fireEvent.click(saveBtn);
+
+    // Simulate page reload by unmounting
+    unmount();
+
+    // Remount application
+    render(<App />);
+
+    const reloadedList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(reloadedList).getByText('Persistent Alpha')).toBeInTheDocument();
+    expect(within(reloadedList).getByText('Persistent Beta')).toBeInTheDocument();
+    expect(within(reloadedList).getByText('Persistent Gamma Updated')).toBeInTheDocument();
+
+    // Verify completion status persisted
+    const reloadedBetaCheckbox = within(reloadedList).getByRole('checkbox', {
+      name: 'Mark "Persistent Beta" as incomplete',
+    });
+    expect(reloadedBetaCheckbox).toBeChecked();
+
+    // Delete one task and verify next reload
+    const deleteAlpha = within(reloadedList).getByRole('button', {
+      name: 'Delete task: Persistent Alpha',
+    });
+    fireEvent.click(deleteAlpha);
+    expect(within(reloadedList).queryByText('Persistent Alpha')).not.toBeInTheDocument();
+  });
+
+  // 5. Keyboard Navigation & Submissions
+  it('5. supports full keyboard operation for form submission, filter controls, and task actions', () => {
+    render(<App />);
+
+    const form = screen.getByRole('form', { name: /create new task/i });
+    const input = within(form).getByLabelText(/^task title$/i);
+
+    // Type via keyboard and submit via form submit event (Enter)
+    fireEvent.change(input, { target: { value: 'Keyboard Operable Task' } });
+    fireEvent.submit(form);
+
+    const taskList = screen.getByRole('list', { name: /tasks/i });
+    expect(within(taskList).getByText('Keyboard Operable Task')).toBeInTheDocument();
+
+    // Status filter keyboard operation
+    const activeFilterBtn = screen.getByRole('button', { name: /^active$/i });
+    fireEvent.click(activeFilterBtn); // native button click triggered by Space/Enter
+    expect(activeFilterBtn).toHaveAttribute('aria-pressed', 'true');
+
+    // Reset filters via clear button
+    const allFilterBtn = screen.getByRole('button', { name: /^all$/i });
+    fireEvent.click(allFilterBtn);
+    expect(allFilterBtn).toHaveAttribute('aria-pressed', 'true');
+  });
+});
+
+
+
+================================================
+FILE: tests/security_and_accessibility.test.tsx
+================================================
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent, within } from '@testing-library/react';
+import App from '../src/App';
+import { validateTaskTitle, isValidTask } from '../src/lib/validation';
+import { loadTasks } from '../src/lib/storage';
+import { filterTasks } from '../src/lib/filters';
+import { TASK_STORAGE_KEY } from '../src/constants/task';
+import type { TaskFilters } from '../src/types/task';
+
+describe('Phase 5 Security & Accessibility Hardening Suite', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  // 1. Invalid task title is rejected
+  it('1. rejects invalid and non-string task titles', () => {
+    expect(validateTaskTitle('').isValid).toBe(false);
+    expect(validateTaskTitle(null).isValid).toBe(false);
+    expect(validateTaskTitle(undefined).isValid).toBe(false);
+    expect(validateTaskTitle(12345).isValid).toBe(false);
+    expect(validateTaskTitle({}).isValid).toBe(false);
+  });
+
+  // 2. Whitespace-only title is rejected
+  it('2. rejects whitespace-only titles', () => {
+    expect(validateTaskTitle('   ').isValid).toBe(false);
+    expect(validateTaskTitle('\t\t\n  ').isValid).toBe(false);
+  });
+
+  // 3. Excessively long title is rejected
+  it('3. rejects excessively long titles exceeding maximum length limit', () => {
+    const longTitle = 'x'.repeat(201);
+    const result = validateTaskTitle(longTitle);
+    expect(result.isValid).toBe(false);
+    expect(result.error).toContain('exceed');
+  });
+
+  // 4. Malicious-looking task title renders strictly as plain text
+  it('4. renders XSS injection payloads safely as plain text without DOM evaluation', () => {
+    render(<App />);
+
+    const xssPayloads = [
+      '<script>alert("XSS")</script>',
+      '<img src=x onerror=alert("XSS")>',
+      '"><script>alert("XSS")</script>',
+      'javascript:alert("XSS")',
+    ];
+
+    const input = screen.getByLabelText(/^task title$/i);
+    const addBtn = screen.getByRole('button', { name: /add task/i });
+
+    for (const payload of xssPayloads) {
+      fireEvent.change(input, { target: { value: payload } });
+      fireEvent.click(addBtn);
+
+      // Verify that the payload is rendered strictly as text content
+      const taskList = screen.getByRole('list', { name: /tasks/i });
+      expect(within(taskList).getByText(payload)).toBeInTheDocument();
+
+      // Verify that NO script or img tag was injected into the DOM
+      expect(document.querySelector('script[src*="XSS"]')).toBeNull();
+      expect(document.querySelector('img[src="x"]')).toBeNull();
+    }
+  });
+
+  // 5. Invalid localStorage data does not crash the application
+  it('5. gracefully handles corrupted localStorage without crashing the application', () => {
+    const corruptStorageScenarios = [
+      '{invalid json',
+      '"just a string"',
+      '12345',
+      JSON.stringify({ notAnArray: true }),
+      JSON.stringify([123, null, 'unexpected']),
+      JSON.stringify([{ title: 'Missing required fields' }]),
+    ];
+
+    for (const corruptData of corruptStorageScenarios) {
+      window.localStorage.setItem(TASK_STORAGE_KEY, corruptData);
+
+      // Storage abstraction safely returns empty array
+      expect(loadTasks()).toEqual([]);
+
+      // Full app mounts cleanly and displays EmptyState
+      const { unmount } = render(<App />);
+      expect(screen.getByRole('heading', { name: 'FocusList', level: 1 })).toBeInTheDocument();
+      expect(screen.getByText(/no tasks yet/i)).toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  // 6. Invalid priority data does not break the application
+  it('6. safely rejects invalid priority values and normalizes filter queries', () => {
+    const taskWithInvalidPriority = {
+      id: 'task-err-1',
+      title: 'Invalid Priority Task',
+      priority: 'urgent',
+      completed: false,
+      createdAt: '2026-09-19T08:00:00.000Z',
+      updatedAt: '2026-09-19T08:00:00.000Z',
+    };
+
+    expect(isValidTask(taskWithInvalidPriority)).toBe(false);
+
+    // filterTasks normalizes invalid priority filters to 'all'
+    const sampleTask = {
+      id: '1',
+      title: 'Valid Task',
+      priority: 'high' as const,
+      completed: false,
+      createdAt: '2026-09-19T08:00:00.000Z',
+      updatedAt: '2026-09-19T08:00:00.000Z',
+    };
+
+    const result = filterTasks([sampleTask], {
+      search: '',
+      status: 'all',
+      priority: 'urgent' as unknown as TaskFilters['priority'],
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]?.id).toBe('1');
+  });
+
+  // 7. Invalid completed value does not break the application
+  it('7. safely rejects invalid completed values', () => {
+    const base = {
+      id: 'task-1',
+      title: 'Test',
+      priority: 'medium' as const,
+      createdAt: '2026-09-19T08:00:00.000Z',
+      updatedAt: '2026-09-19T08:00:00.000Z',
+    };
+
+    expect(isValidTask({ ...base, completed: 'yes' })).toBe(false);
+    expect(isValidTask({ ...base, completed: 1 })).toBe(false);
+    expect(isValidTask({ ...base, completed: null })).toBe(false);
+    expect(isValidTask({ ...base, completed: undefined })).toBe(false);
+  });
+
+  // 8. Filter controls are keyboard accessible
+  it('8. provides accessible, keyboard-operable filter controls with aria-pressed state', () => {
+    render(<App />);
+
+    const allBtn = screen.getByRole('button', { name: /^all$/i });
+    const activeBtn = screen.getByRole('button', { name: /^active$/i });
+    const completedBtn = screen.getByRole('button', { name: /^completed$/i });
+
+    expect(allBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(activeBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(completedBtn).toHaveAttribute('aria-pressed', 'false');
+
+    // Toggle via keyboard click
+    fireEvent.click(activeBtn);
+    expect(allBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(activeBtn).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  // 9. Task action buttons have descriptive accessible names
+  it('9. provides descriptive accessible names on all task action controls', () => {
+    render(<App />);
+
+    const input = screen.getByLabelText(/^task title$/i);
+    const addBtn = screen.getByRole('button', { name: /add task/i });
+
+    fireEvent.change(input, { target: { value: 'Audit accessibility' } });
+    fireEvent.click(addBtn);
+
+    expect(
+      screen.getByRole('checkbox', {
+        name: 'Mark "Audit accessibility" as complete',
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Edit task: Audit accessibility',
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Delete task: Audit accessibility',
+      })
+    ).toBeInTheDocument();
+  });
+
+  // 10. Form controls have accessible labels and associate validation errors via aria-invalid/aria-describedby
+  it('10. ensures form controls have accessible labels and binds validation errors via aria attributes', () => {
+    render(<App />);
+
+    const form = screen.getByRole('form', { name: /create new task/i });
+    const titleInput = within(form).getByLabelText(/^task title$/i);
+    const prioritySelect = within(form).getByLabelText(/^priority:$/i);
+
+    expect(titleInput).toBeInTheDocument();
+    expect(prioritySelect).toBeInTheDocument();
+    expect(titleInput).toHaveAttribute('aria-invalid', 'false');
+
+    // Trigger validation error by submitting empty form
+    const addBtn = within(form).getByRole('button', { name: /add task/i });
+    fireEvent.click(addBtn);
+
+    expect(titleInput).toHaveAttribute('aria-invalid', 'true');
+    expect(titleInput).toHaveAttribute('aria-describedby', 'task-title-error');
+
+    const errorAlert = screen.getByRole('alert');
+    expect(errorAlert).toHaveAttribute('id', 'task-title-error');
+    expect(errorAlert).toHaveTextContent(/cannot be empty/i);
+  });
+});
+
+
+
+================================================
+FILE: tests/setup.ts
+================================================
+import '@testing-library/jest-dom/vitest';
+
+
+
+================================================
+FILE: tests/components/Header.test.tsx
+================================================
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Header } from '../../src/components/layout/Header';
+
+describe('Header Component', () => {
+  it('renders application title, tagline, and current date', () => {
+    render(<Header />);
+
+    expect(screen.getByRole('heading', { name: 'FocusList', level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('Focus on what matters.')).toBeInTheDocument();
+
+    const dateContainer = screen.getByLabelText(/today is/i);
+    expect(dateContainer).toBeInTheDocument();
+  });
+});
+
+
+
+================================================
+FILE: tests/components/TaskFilters.test.tsx
+================================================
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { TaskFilters } from '../../src/components/tasks/TaskFilters';
+
+describe('TaskFilters Component', () => {
+  it('renders search input, status button group, and priority dropdown', () => {
+    render(
+      <TaskFilters
+        search=""
+        status="all"
+        priority="all"
+        hasActiveFilters={false}
+        onSearchChange={vi.fn()}
+        onStatusChange={vi.fn()}
+        onPriorityChange={vi.fn()}
+        onResetFilters={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText(/search tasks/i)).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: /filter by status/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^all$/i })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /^active$/i })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: /^completed$/i })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByLabelText(/priority:/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /clear all filters/i })).not.toBeInTheDocument();
+  });
+
+  it('triggers onSearchChange when user types', () => {
+    const handleSearch = vi.fn();
+    render(
+      <TaskFilters
+        search=""
+        status="all"
+        priority="all"
+        hasActiveFilters={false}
+        onSearchChange={handleSearch}
+        onStatusChange={vi.fn()}
+        onPriorityChange={vi.fn()}
+        onResetFilters={vi.fn()}
+      />
+    );
+
+    const input = screen.getByLabelText(/search tasks/i);
+    fireEvent.change(input, { target: { value: 'meeting' } });
+
+    expect(handleSearch).toHaveBeenCalledWith('meeting');
+  });
+
+  it('triggers onStatusChange when clicking status buttons', () => {
+    const handleStatus = vi.fn();
+    render(
+      <TaskFilters
+        search=""
+        status="all"
+        priority="all"
+        hasActiveFilters={false}
+        onSearchChange={vi.fn()}
+        onStatusChange={handleStatus}
+        onPriorityChange={vi.fn()}
+        onResetFilters={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /^active$/i }));
+    expect(handleStatus).toHaveBeenCalledWith('active');
+
+    fireEvent.click(screen.getByRole('button', { name: /^completed$/i }));
+    expect(handleStatus).toHaveBeenCalledWith('completed');
+  });
+
+  it('triggers onPriorityChange when selecting priority', () => {
+    const handlePriority = vi.fn();
+    render(
+      <TaskFilters
+        search=""
+        status="all"
+        priority="all"
+        hasActiveFilters={false}
+        onSearchChange={vi.fn()}
+        onStatusChange={vi.fn()}
+        onPriorityChange={handlePriority}
+        onResetFilters={vi.fn()}
+      />
+    );
+
+    const select = screen.getByLabelText(/priority:/i);
+    fireEvent.change(select, { target: { value: 'high' } });
+
+    expect(handlePriority).toHaveBeenCalledWith('high');
+  });
+
+  it('shows clear filters button when filters are active and triggers onResetFilters', () => {
+    const handleReset = vi.fn();
+    render(
+      <TaskFilters
+        search="test"
+        status="active"
+        priority="high"
+        hasActiveFilters={true}
+        onSearchChange={vi.fn()}
+        onStatusChange={vi.fn()}
+        onPriorityChange={vi.fn()}
+        onResetFilters={handleReset}
+      />
+    );
+
+    const clearBtn = screen.getByRole('button', { name: /clear all filters/i });
+    expect(clearBtn).toBeInTheDocument();
+
+    fireEvent.click(clearBtn);
+    expect(handleReset).toHaveBeenCalledTimes(1);
+  });
+});
+
+
+
+================================================
+FILE: tests/components/TaskForm.test.tsx
+================================================
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { TaskForm } from '../../src/components/tasks/TaskForm';
+
+describe('TaskForm Component', () => {
+  it('renders title input, priority select, and submit button', () => {
+    render(<TaskForm onAddTask={vi.fn()} />);
+
+    expect(screen.getByLabelText(/task title/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/priority:/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add task/i })).toBeInTheDocument();
+  });
+
+  it('calls onAddTask with trimmed title and default medium priority', () => {
+    const handleAddTask = vi.fn();
+    render(<TaskForm onAddTask={handleAddTask} />);
+
+    const input = screen.getByLabelText(/task title/i);
+    const button = screen.getByRole('button', { name: /add task/i });
+
+    fireEvent.change(input, { target: { value: '  Write documentation  ' } });
+    fireEvent.click(button);
+
+    expect(handleAddTask).toHaveBeenCalledTimes(1);
+    expect(handleAddTask).toHaveBeenCalledWith({
+      title: 'Write documentation',
+      priority: 'medium',
+    });
+    expect(input).toHaveValue('');
+  });
+
+  it('allows changing priority and submits with chosen priority', () => {
+    const handleAddTask = vi.fn();
+    render(<TaskForm onAddTask={handleAddTask} />);
+
+    const input = screen.getByLabelText(/task title/i);
+    const select = screen.getByLabelText(/priority:/i);
+    const button = screen.getByRole('button', { name: /add task/i });
+
+    fireEvent.change(input, { target: { value: 'Fix critical bug' } });
+    fireEvent.change(select, { target: { value: 'high' } });
+    fireEvent.click(button);
+
+    expect(handleAddTask).toHaveBeenCalledWith({
+      title: 'Fix critical bug',
+      priority: 'high',
+    });
+  });
+
+  it('shows error when submitting empty title and does not call onAddTask', () => {
+    const handleAddTask = vi.fn();
+    render(<TaskForm onAddTask={handleAddTask} />);
+
+    const button = screen.getByRole('button', { name: /add task/i });
+    fireEvent.click(button);
+
+    expect(handleAddTask).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent(/cannot be empty/i);
+  });
+
+  it('shows error when submitting whitespace-only title', () => {
+    const handleAddTask = vi.fn();
+    render(<TaskForm onAddTask={handleAddTask} />);
+
+    const input = screen.getByLabelText(/task title/i);
+    const button = screen.getByRole('button', { name: /add task/i });
+
+    fireEvent.change(input, { target: { value: '    ' } });
+    fireEvent.click(button);
+
+    expect(handleAddTask).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent(/cannot be empty/i);
+  });
+
+  it('clears error message when typing in the title input', () => {
+    render(<TaskForm onAddTask={vi.fn()} />);
+
+    const input = screen.getByLabelText(/task title/i);
+    const button = screen.getByRole('button', { name: /add task/i });
+
+    fireEvent.click(button);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: 'A' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+
+
+================================================
+FILE: tests/components/TaskItem.test.tsx
+================================================
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { TaskItem } from '../../src/components/tasks/TaskItem';
+import type { Task } from '../../src/types/task';
+
+describe('TaskItem Component', () => {
+  const sampleTask: Task = {
+    id: 'test-1',
+    title: 'Design component',
+    priority: 'high',
+    completed: false,
+    createdAt: '2026-09-19T10:00:00.000Z',
+    updatedAt: '2026-09-19T10:00:00.000Z',
+  };
+
+  it('renders task details and controls with accessible names', () => {
+    render(
+      <TaskItem
+        task={sampleTask}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Design component')).toBeInTheDocument();
+    expect(screen.getByText('High')).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /mark "design component" as complete/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /edit task: design component/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /delete task: design component/i })
+    ).toBeInTheDocument();
+  });
+
+  it('indicates completed state clearly', () => {
+    const completedTask: Task = { ...sampleTask, completed: true };
+    render(
+      <TaskItem
+        task={completedTask}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Completed')).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /mark "design component" as incomplete/i })
+    ).toBeChecked();
+  });
+
+  it('calls onToggle when completion checkbox is clicked', () => {
+    const handleToggle = vi.fn();
+    render(
+      <TaskItem
+        task={sampleTask}
+        onToggle={handleToggle}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    const checkbox = screen.getByRole('checkbox');
+    fireEvent.click(checkbox);
+
+    expect(handleToggle).toHaveBeenCalledWith(sampleTask.id);
+  });
+
+  it('calls onDelete when delete button is clicked', () => {
+    const handleDelete = vi.fn();
+    render(
+      <TaskItem
+        task={sampleTask}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={handleDelete}
+      />
+    );
+
+    const deleteBtn = screen.getByRole('button', { name: /delete task/i });
+    fireEvent.click(deleteBtn);
+
+    expect(handleDelete).toHaveBeenCalledWith(sampleTask.id);
+  });
+
+  it('enters edit mode and allows saving modified title and priority', () => {
+    const handleUpdate = vi.fn().mockReturnValue(true);
+    render(
+      <TaskItem
+        task={sampleTask}
+        onToggle={vi.fn()}
+        onUpdate={handleUpdate}
+        onDelete={vi.fn()}
+      />
+    );
+
+    const editBtn = screen.getByRole('button', { name: /edit task/i });
+    fireEvent.click(editBtn);
+
+    // Now in edit mode
+    const titleInput = screen.getByLabelText(/edit task title/i);
+    const prioritySelect = screen.getByLabelText(/priority:/i);
+    const saveBtn = screen.getByRole('button', { name: /save changes/i });
+
+    expect(titleInput).toHaveValue(sampleTask.title);
+
+    fireEvent.change(titleInput, { target: { value: 'Updated component title' } });
+    fireEvent.change(prioritySelect, { target: { value: 'low' } });
+    fireEvent.click(saveBtn);
+
+    expect(handleUpdate).toHaveBeenCalledWith(sampleTask.id, {
+      title: 'Updated component title',
+      priority: 'low',
+    });
+
+    // Should return to normal display mode after successful update
+    expect(screen.queryByLabelText(/edit task title/i)).not.toBeInTheDocument();
+  });
+
+  it('cancels edit mode without updating', () => {
+    const handleUpdate = vi.fn();
+    render(
+      <TaskItem
+        task={sampleTask}
+        onToggle={vi.fn()}
+        onUpdate={handleUpdate}
+        onDelete={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /edit task/i }));
+
+    const cancelBtn = screen.getByRole('button', { name: /cancel editing/i });
+    fireEvent.click(cancelBtn);
+
+    expect(handleUpdate).not.toHaveBeenCalled();
+    expect(screen.getByText(sampleTask.title)).toBeInTheDocument();
+  });
+
+  it('shows error in edit mode when saving empty title', () => {
+    const handleUpdate = vi.fn();
+    render(
+      <TaskItem
+        task={sampleTask}
+        onToggle={vi.fn()}
+        onUpdate={handleUpdate}
+        onDelete={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /edit task/i }));
+
+    const titleInput = screen.getByLabelText(/edit task title/i);
+    const saveBtn = screen.getByRole('button', { name: /save changes/i });
+
+    fireEvent.change(titleInput, { target: { value: '   ' } });
+    fireEvent.click(saveBtn);
+
+    expect(handleUpdate).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent(/cannot be empty/i);
+  });
+});
+
+
+
+================================================
+FILE: tests/components/TaskList.test.tsx
+================================================
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { TaskList } from '../../src/components/tasks/TaskList';
+import type { Task } from '../../src/types/task';
+
+describe('TaskList Component', () => {
+  const sampleTasks: Task[] = [
+    {
+      id: 'task-1',
+      title: 'First task in list',
+      priority: 'high',
+      completed: false,
+      createdAt: '2026-09-19T10:00:00.000Z',
+      updatedAt: '2026-09-19T10:00:00.000Z',
+    },
+    {
+      id: 'task-2',
+      title: 'Second task in list',
+      priority: 'medium',
+      completed: true,
+      createdAt: '2026-09-19T10:05:00.000Z',
+      updatedAt: '2026-09-19T10:05:00.000Z',
+    },
+  ];
+
+  it('renders EmptyState when there are no tasks in total', () => {
+    render(
+      <TaskList
+        tasks={[]}
+        totalTasksCount={0}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText(/no tasks yet/i)).toBeInTheDocument();
+  });
+
+  it('renders empty filter state when tasks exist but active filters yield zero matches', () => {
+    const handleReset = vi.fn();
+    render(
+      <TaskList
+        tasks={[]}
+        totalTasksCount={3}
+        hasActiveFilters={true}
+        onResetFilters={handleReset}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText(/no tasks match your filters/i)).toBeInTheDocument();
+
+    const resetBtn = screen.getByRole('button', { name: /clear all active filters/i });
+    expect(resetBtn).toBeInTheDocument();
+
+    fireEvent.click(resetBtn);
+    expect(handleReset).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders tasks in a semantic unordered list', () => {
+    render(
+      <TaskList
+        tasks={sampleTasks}
+        totalTasksCount={2}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    const list = screen.getByRole('list', { name: /tasks/i });
+    expect(list).toBeInTheDocument();
+
+    const items = screen.getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+    expect(screen.getByText('First task in list')).toBeInTheDocument();
+    expect(screen.getByText('Second task in list')).toBeInTheDocument();
+  });
+});
+
+
+
+================================================
+FILE: tests/components/TaskStats.test.tsx
+================================================
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { TaskStats } from '../../src/components/dashboard/TaskStats';
+import type { Task } from '../../src/types/task';
+
+describe('TaskStats Component', () => {
+  const sampleTasks: Task[] = [
+    {
+      id: 'task-1',
+      title: 'Active Task 1',
+      priority: 'high',
+      completed: false,
+      createdAt: '2026-09-19T08:00:00.000Z',
+      updatedAt: '2026-09-19T08:00:00.000Z',
+    },
+    {
+      id: 'task-2',
+      title: 'Completed Task 1',
+      priority: 'medium',
+      completed: true,
+      createdAt: '2026-09-19T08:10:00.000Z',
+      updatedAt: '2026-09-19T08:10:00.000Z',
+    },
+    {
+      id: 'task-3',
+      title: 'Completed Task 2',
+      priority: 'low',
+      completed: true,
+      createdAt: '2026-09-19T08:20:00.000Z',
+      updatedAt: '2026-09-19T08:20:00.000Z',
+    },
+  ];
+
+  it('renders zero counts when tasks list is empty', () => {
+    render(<TaskStats tasks={[]} />);
+
+    expect(screen.getByRole('region', { name: /task statistics/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/total tasks: 0/i)).toHaveTextContent('0');
+    expect(screen.getByLabelText(/completed tasks: 0/i)).toHaveTextContent('0');
+    expect(screen.getByLabelText(/pending tasks: 0/i)).toHaveTextContent('0');
+  });
+
+  it('accurately displays total, completed, and pending counts', () => {
+    render(<TaskStats tasks={sampleTasks} />);
+
+    // Total: 3, Completed: 2, Pending: 1
+    expect(screen.getByLabelText(/total tasks: 3/i)).toHaveTextContent('3');
+    expect(screen.getByLabelText(/completed tasks: 2/i)).toHaveTextContent('2');
+    expect(screen.getByLabelText(/pending tasks: 1/i)).toHaveTextContent('1');
+  });
+});
+
+
+
+================================================
+FILE: tests/hooks/useLocalStorage.test.ts
+================================================
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useLocalStorage } from '../../src/hooks/useLocalStorage';
+
+describe('useLocalStorage Hook', () => {
+  const TEST_KEY = 'test_item_key';
+
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('initializes with default value when localStorage is empty', () => {
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, 'default_val'));
+    expect(result.current[0]).toBe('default_val');
+  });
+
+  it('initializes with default value from an initializer function', () => {
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, () => 'computed_val'));
+    expect(result.current[0]).toBe('computed_val');
+  });
+
+  it('initializes with existing valid data in localStorage', () => {
+    window.localStorage.setItem(TEST_KEY, JSON.stringify({ count: 42 }));
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, { count: 0 }));
+    expect(result.current[0]).toEqual({ count: 42 });
+  });
+
+  it('falls back to default value if stored JSON is corrupt', () => {
+    window.localStorage.setItem(TEST_KEY, 'corrupted{json');
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, 'fallback'));
+    expect(result.current[0]).toBe('fallback');
+  });
+
+  it('falls back to default value if validator returns false', () => {
+    window.localStorage.setItem(TEST_KEY, JSON.stringify({ count: -1 }));
+    const isPositiveNumberRecord = (val: unknown): val is { count: number } =>
+      typeof val === 'object' && val !== null && 'count' in val && typeof (val as { count: number }).count === 'number' && (val as { count: number }).count > 0;
+
+    const { result } = renderHook(() =>
+      useLocalStorage(TEST_KEY, { count: 1 }, isPositiveNumberRecord)
+    );
+    expect(result.current[0]).toEqual({ count: 1 });
+  });
+
+  it('updates state and persists value to localStorage', () => {
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, 'initial'));
+
+    act(() => {
+      result.current[1]('updated');
+    });
+
+    expect(result.current[0]).toBe('updated');
+    expect(window.localStorage.getItem(TEST_KEY)).toBe(JSON.stringify('updated'));
+  });
+
+  it('supports functional state updates', () => {
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, 10));
+
+    act(() => {
+      result.current[1]((prev) => prev + 5);
+    });
+
+    expect(result.current[0]).toBe(15);
+    expect(window.localStorage.getItem(TEST_KEY)).toBe(JSON.stringify(15));
+  });
+
+  it('handles localStorage errors gracefully during write', () => {
+    const { result } = renderHook(() => useLocalStorage(TEST_KEY, 'safe'));
+
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceeded');
+    });
+
+    // Should update in-memory state without crashing
+    act(() => {
+      result.current[1]('new_val');
+    });
+
+    expect(result.current[0]).toBe('new_val');
+  });
+});
+
+
+
+================================================
+FILE: tests/hooks/useTasks.test.ts
+================================================
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useTasks } from '../../src/hooks/useTasks';
+import { TASK_STORAGE_KEY } from '../../src/constants/task';
+import type { Task } from '../../src/types/task';
+
+describe('useTasks Hook', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  it('starts with an empty task array', () => {
+    const { result } = renderHook(() => useTasks());
+    expect(result.current.tasks).toEqual([]);
+  });
+
+  it('adds a task with default medium priority and stores it', () => {
+    const { result } = renderHook(() => useTasks());
+
+    let createdTask: Task | null = null;
+    act(() => {
+      createdTask = result.current.addTask({ title: 'First Task' });
+    });
+
+    expect(createdTask).not.toBeNull();
+    expect(createdTask!.title).toBe('First Task');
+    expect(createdTask!.priority).toBe('medium');
+    expect(createdTask!.completed).toBe(false);
+    expect(createdTask!.id).toBeTruthy();
+    expect(createdTask!.createdAt).toBeTruthy();
+    expect(createdTask!.updatedAt).toBe(createdTask!.createdAt);
+
+    expect(result.current.tasks).toHaveLength(1);
+    expect(result.current.tasks[0]).toEqual(createdTask);
+
+    // Verify localStorage persistence
+    const stored = JSON.parse(window.localStorage.getItem(TASK_STORAGE_KEY)!);
+    expect(stored).toEqual([createdTask]);
+  });
+
+  it('adds a task with explicit priority', () => {
+    const { result } = renderHook(() => useTasks());
+
+    let highTask: Task | null = null;
+    act(() => {
+      highTask = result.current.addTask({ title: 'High priority task', priority: 'high' });
+    });
+
+    expect(highTask).not.toBeNull();
+    expect(highTask!.priority).toBe('high');
+    expect(result.current.tasks[0]?.priority).toBe('high');
+  });
+
+  it('rejects adding a task with empty or whitespace-only title', () => {
+    const { result } = renderHook(() => useTasks());
+
+    act(() => {
+      const emptyRes = result.current.addTask({ title: '' });
+      expect(emptyRes).toBeNull();
+
+      const whitespaceRes = result.current.addTask({ title: '    ' });
+      expect(whitespaceRes).toBeNull();
+    });
+
+    expect(result.current.tasks).toEqual([]);
+  });
+
+  it('updates an existing task title and priority immutably', () => {
+    const { result } = renderHook(() => useTasks());
+
+    let created: Task | null = null;
+    act(() => {
+      created = result.current.addTask({ title: 'Old Title', priority: 'low' });
+    });
+
+    const initialCreatedAt = created!.createdAt;
+
+    let updateSuccess = false;
+    act(() => {
+      updateSuccess = result.current.updateTask(created!.id, {
+        title: 'New Updated Title',
+        priority: 'high',
+      });
+    });
+
+    expect(updateSuccess).toBe(true);
+    expect(result.current.tasks[0]?.title).toBe('New Updated Title');
+    expect(result.current.tasks[0]?.priority).toBe('high');
+    expect(result.current.tasks[0]?.createdAt).toBe(initialCreatedAt);
+  });
+
+  it('rejects invalid updates', () => {
+    const { result } = renderHook(() => useTasks());
+
+    let created: Task | null = null;
+    act(() => {
+      created = result.current.addTask({ title: 'Valid Task' });
+    });
+
+    act(() => {
+      const invalidTitleUpdate = result.current.updateTask(created!.id, { title: '   ' });
+      expect(invalidTitleUpdate).toBe(false);
+
+      const nonExistentUpdate = result.current.updateTask('fake-id', { title: 'Changed' });
+      expect(nonExistentUpdate).toBe(false);
+    });
+
+    expect(result.current.tasks[0]?.title).toBe('Valid Task');
+  });
+
+  it('toggles task completion', () => {
+    const { result } = renderHook(() => useTasks());
+
+    let created: Task | null = null;
+    act(() => {
+      created = result.current.addTask({ title: 'To be toggled' });
+    });
+
+    expect(result.current.tasks[0]?.completed).toBe(false);
+
+    let toggleSuccess = false;
+    act(() => {
+      toggleSuccess = result.current.toggleTask(created!.id);
+    });
+
+    expect(toggleSuccess).toBe(true);
+    expect(result.current.tasks[0]?.completed).toBe(true);
+
+    act(() => {
+      result.current.toggleTask(created!.id);
+    });
+    expect(result.current.tasks[0]?.completed).toBe(false);
+  });
+
+  it('returns false when toggling non-existent task', () => {
+    const { result } = renderHook(() => useTasks());
+
+    act(() => {
+      const res = result.current.toggleTask('unknown-id');
+      expect(res).toBe(false);
+    });
+  });
+
+  it('deletes a task immutably', () => {
+    const { result } = renderHook(() => useTasks());
+
+    let task1: Task | null = null;
+    let task2: Task | null = null;
+
+    act(() => {
+      task1 = result.current.addTask({ title: 'Task 1' });
+      task2 = result.current.addTask({ title: 'Task 2' });
+    });
+
+    expect(result.current.tasks).toHaveLength(2);
+
+    let deleteSuccess = false;
+    act(() => {
+      deleteSuccess = result.current.deleteTask(task1!.id);
+    });
+
+    expect(deleteSuccess).toBe(true);
+    expect(result.current.tasks).toHaveLength(1);
+    expect(result.current.tasks[0]?.id).toBe(task2!.id);
+
+    // Deleting non-existent returns false
+    act(() => {
+      const secondDelete = result.current.deleteTask(task1!.id);
+      expect(secondDelete).toBe(false);
+    });
+  });
+
+  it('clears all tasks', () => {
+    const { result } = renderHook(() => useTasks());
+
+    act(() => {
+      result.current.addTask({ title: 'Task A' });
+      result.current.addTask({ title: 'Task B' });
+    });
+
+    expect(result.current.tasks).toHaveLength(2);
+
+    act(() => {
+      result.current.clearAllTasks();
+    });
+
+    expect(result.current.tasks).toEqual([]);
+    expect(window.localStorage.getItem(TASK_STORAGE_KEY)).toBe('[]');
+  });
+
+  it('persists and loads tasks across hook instances', () => {
+    const { result: firstInstance } = renderHook(() => useTasks());
+
+    act(() => {
+      firstInstance.current.addTask({ title: 'Persistent Task', priority: 'high' });
+    });
+
+    // Render a separate instance of the hook
+    const { result: secondInstance } = renderHook(() => useTasks());
+    expect(secondInstance.current.tasks).toHaveLength(1);
+    expect(secondInstance.current.tasks[0]?.title).toBe('Persistent Task');
+    expect(secondInstance.current.tasks[0]?.priority).toBe('high');
+  });
+});
+
+
+
+================================================
+FILE: tests/lib/filters.test.ts
+================================================
+import { describe, it, expect } from 'vitest';
+import { filterTasks } from '../../src/lib/filters';
+import type { Task, TaskFilters } from '../../src/types/task';
+
+describe('Filter and Search Logic (filterTasks)', () => {
+  const sampleTasks: Task[] = [
+    {
+      id: 'task-1',
+      title: 'Finish Project documentation',
+      priority: 'high',
+      completed: false,
+      createdAt: '2026-09-19T08:00:00.000Z',
+      updatedAt: '2026-09-19T08:00:00.000Z',
+    },
+    {
+      id: 'task-2',
+      title: 'Review pull request',
+      priority: 'medium',
+      completed: true,
+      createdAt: '2026-09-19T08:10:00.000Z',
+      updatedAt: '2026-09-19T08:10:00.000Z',
+    },
+    {
+      id: 'task-3',
+      title: 'Deploy project to staging',
+      priority: 'high',
+      completed: true,
+      createdAt: '2026-09-19T08:20:00.000Z',
+      updatedAt: '2026-09-19T08:20:00.000Z',
+    },
+    {
+      id: 'task-4',
+      title: 'Team standup meeting',
+      priority: 'low',
+      completed: false,
+      createdAt: '2026-09-19T08:30:00.000Z',
+      updatedAt: '2026-09-19T08:30:00.000Z',
+    },
+  ];
+
+  const defaultFilters: TaskFilters = {
+    search: '',
+    status: 'all',
+    priority: 'all',
+  };
+
+  describe('Search by Title', () => {
+    it('returns all tasks when search query is empty', () => {
+      const results = filterTasks(sampleTasks, defaultFilters);
+      expect(results).toHaveLength(4);
+    });
+
+    it('returns all tasks when search query is whitespace only', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, search: '   \t  ' });
+      expect(results).toHaveLength(4);
+    });
+
+    it('matches task title substring', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, search: 'standup' });
+      expect(results).toHaveLength(1);
+      expect(results[0]?.id).toBe('task-4');
+    });
+
+    it('performs case-insensitive search', () => {
+      const lowerResults = filterTasks(sampleTasks, { ...defaultFilters, search: 'project' });
+      const upperResults = filterTasks(sampleTasks, { ...defaultFilters, search: 'PROJECT' });
+      const mixedResults = filterTasks(sampleTasks, { ...defaultFilters, search: 'pRoJeCt' });
+
+      expect(lowerResults).toHaveLength(2);
+      expect(upperResults).toHaveLength(2);
+      expect(mixedResults).toHaveLength(2);
+      expect(lowerResults.map((t) => t.id)).toEqual(['task-1', 'task-3']);
+    });
+
+    it('trims leading and trailing whitespace from search query', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, search: '  project  ' });
+      expect(results).toHaveLength(2);
+    });
+
+    it('returns empty array when search query has no matches', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, search: 'nonexistent keyword' });
+      expect(results).toHaveLength(0);
+    });
+  });
+
+  describe('Status Filtering', () => {
+    it('returns all tasks when status is "all"', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, status: 'all' });
+      expect(results).toHaveLength(4);
+    });
+
+    it('returns only active (uncompleted) tasks when status is "active"', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, status: 'active' });
+      expect(results).toHaveLength(2);
+      expect(results.every((t) => !t.completed)).toBe(true);
+      expect(results.map((t) => t.id)).toEqual(['task-1', 'task-4']);
+    });
+
+    it('returns only completed tasks when status is "completed"', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, status: 'completed' });
+      expect(results).toHaveLength(2);
+      expect(results.every((t) => t.completed)).toBe(true);
+      expect(results.map((t) => t.id)).toEqual(['task-2', 'task-3']);
+    });
+  });
+
+  describe('Priority Filtering', () => {
+    it('returns all tasks when priority is "all"', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, priority: 'all' });
+      expect(results).toHaveLength(4);
+    });
+
+    it('returns only high priority tasks', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, priority: 'high' });
+      expect(results).toHaveLength(2);
+      expect(results.every((t) => t.priority === 'high')).toBe(true);
+      expect(results.map((t) => t.id)).toEqual(['task-1', 'task-3']);
+    });
+
+    it('returns only medium priority tasks', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, priority: 'medium' });
+      expect(results).toHaveLength(1);
+      expect(results[0]?.id).toBe('task-2');
+    });
+
+    it('returns only low priority tasks', () => {
+      const results = filterTasks(sampleTasks, { ...defaultFilters, priority: 'low' });
+      expect(results).toHaveLength(1);
+      expect(results[0]?.id).toBe('task-4');
+    });
+  });
+
+  describe('Combined Filtering', () => {
+    it('combines search and status correctly', () => {
+      // Search 'project', Status 'active' -> task-1 (task-3 is completed)
+      const results = filterTasks(sampleTasks, {
+        search: 'project',
+        status: 'active',
+        priority: 'all',
+      });
+      expect(results).toHaveLength(1);
+      expect(results[0]?.id).toBe('task-1');
+    });
+
+    it('combines search and priority correctly', () => {
+      // Search 'project', Priority 'high' -> task-1 and task-3
+      const results = filterTasks(sampleTasks, {
+        search: 'project',
+        status: 'all',
+        priority: 'high',
+      });
+      expect(results).toHaveLength(2);
+
+      // Search 'project', Priority 'low' -> 0 results
+      const noResults = filterTasks(sampleTasks, {
+        search: 'project',
+        status: 'all',
+        priority: 'low',
+      });
+      expect(noResults).toHaveLength(0);
+    });
+
+    it('combines status and priority correctly', () => {
+      // Status 'completed', Priority 'high' -> task-3
+      const results = filterTasks(sampleTasks, {
+        search: '',
+        status: 'completed',
+        priority: 'high',
+      });
+      expect(results).toHaveLength(1);
+      expect(results[0]?.id).toBe('task-3');
+    });
+
+    it('combines search, status, and priority simultaneously', () => {
+      // Search 'project', Status 'completed', Priority 'high' -> task-3
+      const results = filterTasks(sampleTasks, {
+        search: 'project',
+        status: 'completed',
+        priority: 'high',
+      });
+      expect(results).toHaveLength(1);
+      expect(results[0]?.id).toBe('task-3');
+
+      // Search 'project', Status 'completed', Priority 'medium' -> 0 matches
+      const emptyResults = filterTasks(sampleTasks, {
+        search: 'project',
+        status: 'completed',
+        priority: 'medium',
+      });
+      expect(emptyResults).toHaveLength(0);
+    });
+
+    it('does not mutate the original tasks array or task objects', () => {
+      const originalCopy = JSON.parse(JSON.stringify(sampleTasks));
+      filterTasks(sampleTasks, {
+        search: 'project',
+        status: 'active',
+        priority: 'high',
+      });
+      expect(sampleTasks).toEqual(originalCopy);
+    });
+  });
+});
+
+
+
+================================================
+FILE: tests/lib/storage.test.ts
+================================================
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type { Task } from '../../src/types/task';
+import { TASK_STORAGE_KEY } from '../../src/constants/task';
+import {
+  isLocalStorageAvailable,
+  loadTasks,
+  saveTasks,
+  clearTasks,
+} from '../../src/lib/storage';
+
+describe('Storage Layer', () => {
+  const sampleTasks: Task[] = [
+    {
+      id: 'task-1',
+      title: 'Write unit tests',
+      priority: 'high',
+      completed: false,
+      createdAt: '2026-09-19T08:00:00.000Z',
+      updatedAt: '2026-09-19T08:00:00.000Z',
+    },
+    {
+      id: 'task-2',
+      title: 'Check storage abstraction',
+      priority: 'low',
+      completed: true,
+      createdAt: '2026-09-19T08:30:00.000Z',
+      updatedAt: '2026-09-19T09:00:00.000Z',
+    },
+  ];
+
+  beforeEach(() => {
+    window.localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+  describe('isLocalStorageAvailable', () => {
+    it('returns true in standard browser/jsdom environment', () => {
+      expect(isLocalStorageAvailable()).toBe(true);
+    });
+
+    it('returns false when setItem throws an error', () => {
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('QuotaExceededError');
+      });
+      expect(isLocalStorageAvailable()).toBe(false);
+    });
+  });
+
+  describe('loadTasks', () => {
+    it('returns empty array when storage is empty', () => {
+      expect(loadTasks()).toEqual([]);
+    });
+
+    it('loads and parses valid stored tasks', () => {
+      window.localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(sampleTasks));
+      const loaded = loadTasks();
+      expect(loaded).toEqual(sampleTasks);
+    });
+
+    it('returns empty array when storage contains malformed JSON', () => {
+      window.localStorage.setItem(TASK_STORAGE_KEY, 'invalid-json{{[}');
+      expect(loadTasks()).toEqual([]);
+    });
+
+    it('returns empty array when storage contains non-array JSON', () => {
+      window.localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify({ not: 'an array' }));
+      expect(loadTasks()).toEqual([]);
+    });
+
+    it('returns empty array when stored tasks contain invalid task objects', () => {
+      window.localStorage.setItem(
+        TASK_STORAGE_KEY,
+        JSON.stringify([
+          { id: '1', title: 'Valid', priority: 'high', completed: false, createdAt: '2026-01-01', updatedAt: '2026-01-01' },
+          { id: '2', title: '', priority: 'invalid-priority' },
+        ])
+      );
+      expect(loadTasks()).toEqual([]);
+    });
+
+    it('returns empty array when localStorage.getItem throws', () => {
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('SecurityError');
+      });
+      expect(loadTasks()).toEqual([]);
+    });
+  });
+
+  describe('saveTasks', () => {
+    it('saves valid tasks to localStorage and returns true', () => {
+      const result = saveTasks(sampleTasks);
+      expect(result).toBe(true);
+
+      const raw = window.localStorage.getItem(TASK_STORAGE_KEY);
+      expect(raw).not.toBeNull();
+      expect(JSON.parse(raw!)).toEqual(sampleTasks);
+    });
+
+    it('rejects saving invalid task objects and returns false', () => {
+      const invalidTasks = [
+        { id: '1', title: '' } as unknown as Task,
+      ];
+      const result = saveTasks(invalidTasks);
+      expect(result).toBe(false);
+    });
+
+    it('handles localStorage errors gracefully and returns false', () => {
+      vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('Storage disabled');
+      });
+      const result = saveTasks(sampleTasks);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('clearTasks', () => {
+    it('removes the tasks storage key and returns true', () => {
+      window.localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(sampleTasks));
+      expect(window.localStorage.getItem(TASK_STORAGE_KEY)).not.toBeNull();
+
+      const result = clearTasks();
+      expect(result).toBe(true);
+      expect(window.localStorage.getItem(TASK_STORAGE_KEY)).toBeNull();
+    });
+
+    it('handles removal errors gracefully and returns false', () => {
+      vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+        throw new Error('Access denied');
+      });
+      const result = clearTasks();
+      expect(result).toBe(false);
+    });
+  });
+});
+
+
+
+================================================
+FILE: tests/lib/validation.test.ts
+================================================
+import { describe, it, expect } from 'vitest';
+import type { Task } from '../../src/types/task';
+import { TASK_LIMITS } from '../../src/constants/task';
+import {
+  isValidPriority,
+  isValidId,
+  isValidTimestamp,
+  validateTaskTitle,
+  isValidTask,
+  validateTasks,
+} from '../../src/lib/validation';
+
+describe('Task Validation Layer', () => {
+  const validTask: Task = {
+    id: 'task-1',
+    title: 'Complete Phase 1 Architecture',
+    priority: 'high',
+    completed: false,
+    createdAt: '2026-09-19T08:00:00.000Z',
+    updatedAt: '2026-09-19T08:00:00.000Z',
+  };
+
+  describe('validateTaskTitle', () => {
+    it('accepts valid titles and trims surrounding whitespace', () => {
+      const result = validateTaskTitle('  Learn Vitest  ');
+      expect(result.isValid).toBe(true);
+      expect(result.sanitized).toBe('Learn Vitest');
+      expect(result.error).toBeUndefined();
+    });
+
+    it('rejects empty title', () => {
+      const result = validateTaskTitle('');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('cannot be empty');
+    });
+
+    it('rejects whitespace-only title', () => {
+      const result = validateTaskTitle('   \t\n  ');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('cannot be empty');
+    });
+
+    it('rejects non-string values', () => {
+      expect(validateTaskTitle(null).isValid).toBe(false);
+      expect(validateTaskTitle(123).isValid).toBe(false);
+      expect(validateTaskTitle(undefined).isValid).toBe(false);
+      expect(validateTaskTitle({}).isValid).toBe(false);
+    });
+
+    it('rejects titles exceeding maximum title length', () => {
+      const longTitle = 'a'.repeat(TASK_LIMITS.MAX_TITLE_LENGTH + 1);
+      const result = validateTaskTitle(longTitle);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain(`exceed ${TASK_LIMITS.MAX_TITLE_LENGTH}`);
+    });
+
+    it('accepts title at maximum title length', () => {
+      const maxTitle = 'a'.repeat(TASK_LIMITS.MAX_TITLE_LENGTH);
+      const result = validateTaskTitle(maxTitle);
+      expect(result.isValid).toBe(true);
+      expect(result.sanitized).toBe(maxTitle);
+    });
+  });
+
+  describe('isValidPriority', () => {
+    it('accepts valid priorities', () => {
+      expect(isValidPriority('high')).toBe(true);
+      expect(isValidPriority('medium')).toBe(true);
+      expect(isValidPriority('low')).toBe(true);
+    });
+
+    it('rejects invalid priority strings', () => {
+      expect(isValidPriority('urgent')).toBe(false);
+      expect(isValidPriority('critical')).toBe(false);
+      expect(isValidPriority('HIGH')).toBe(false);
+      expect(isValidPriority('')).toBe(false);
+    });
+
+    it('rejects non-string priority values', () => {
+      expect(isValidPriority(null)).toBe(false);
+      expect(isValidPriority(undefined)).toBe(false);
+      expect(isValidPriority(1)).toBe(false);
+      expect(isValidPriority({})).toBe(false);
+    });
+  });
+
+  describe('isValidId', () => {
+    it('accepts non-empty strings', () => {
+      expect(isValidId('abc-123')).toBe(true);
+      expect(isValidId('1')).toBe(true);
+    });
+
+    it('rejects empty, whitespace-only or non-string IDs', () => {
+      expect(isValidId('')).toBe(false);
+      expect(isValidId('   ')).toBe(false);
+      expect(isValidId(null)).toBe(false);
+      expect(isValidId(123)).toBe(false);
+    });
+  });
+
+  describe('isValidTimestamp', () => {
+    it('accepts valid ISO timestamp strings', () => {
+      expect(isValidTimestamp('2026-09-19T08:00:00.000Z')).toBe(true);
+      expect(isValidTimestamp('2026-01-01')).toBe(true);
+    });
+
+    it('rejects invalid date strings', () => {
+      expect(isValidTimestamp('not-a-date')).toBe(false);
+      expect(isValidTimestamp('')).toBe(false);
+      expect(isValidTimestamp('   ')).toBe(false);
+    });
+
+    it('rejects non-string timestamps', () => {
+      expect(isValidTimestamp(null)).toBe(false);
+      expect(isValidTimestamp(Date.now())).toBe(false);
+      expect(isValidTimestamp(undefined)).toBe(false);
+    });
+  });
+
+  describe('isValidTask', () => {
+    it('returns true for a fully valid task object', () => {
+      expect(isValidTask(validTask)).toBe(true);
+    });
+
+    it('rejects non-object or null values', () => {
+      expect(isValidTask(null)).toBe(false);
+      expect(isValidTask(undefined)).toBe(false);
+      expect(isValidTask('task')).toBe(false);
+      expect(isValidTask(123)).toBe(false);
+      expect(isValidTask([])).toBe(false);
+    });
+
+    it('rejects task with missing or invalid id', () => {
+      expect(isValidTask({ ...validTask, id: '' })).toBe(false);
+      expect(isValidTask({ ...validTask, id: 123 })).toBe(false);
+    });
+
+    it('rejects task with empty or invalid title', () => {
+      expect(isValidTask({ ...validTask, title: '' })).toBe(false);
+      expect(isValidTask({ ...validTask, title: '   ' })).toBe(false);
+      expect(isValidTask({ ...validTask, title: 123 })).toBe(false);
+    });
+
+    it('rejects task with invalid priority', () => {
+      expect(isValidTask({ ...validTask, priority: 'urgent' })).toBe(false);
+      expect(isValidTask({ ...validTask, priority: 1 })).toBe(false);
+    });
+
+    it('rejects task with invalid completed field', () => {
+      expect(isValidTask({ ...validTask, completed: 'true' })).toBe(false);
+      expect(isValidTask({ ...validTask, completed: 1 })).toBe(false);
+      expect(isValidTask({ ...validTask, completed: null })).toBe(false);
+    });
+
+    it('rejects task with invalid createdAt or updatedAt timestamp', () => {
+      expect(isValidTask({ ...validTask, createdAt: 'invalid-date' })).toBe(false);
+      expect(isValidTask({ ...validTask, updatedAt: 'invalid-date' })).toBe(false);
+    });
+
+    it('rejects task missing required keys', () => {
+      const missingId = {
+        title: validTask.title,
+        priority: validTask.priority,
+        completed: validTask.completed,
+        createdAt: validTask.createdAt,
+        updatedAt: validTask.updatedAt,
+      };
+      expect(isValidTask(missingId)).toBe(false);
+
+      const missingTitle = {
+        id: validTask.id,
+        priority: validTask.priority,
+        completed: validTask.completed,
+        createdAt: validTask.createdAt,
+        updatedAt: validTask.updatedAt,
+      };
+      expect(isValidTask(missingTitle)).toBe(false);
+    });
+  });
+
+  describe('validateTasks', () => {
+    it('accepts array of valid tasks', () => {
+      const tasks = [validTask, { ...validTask, id: 'task-2', title: 'Second task' }];
+      expect(validateTasks(tasks)).toEqual(tasks);
+    });
+
+    it('returns empty array when input is empty array', () => {
+      expect(validateTasks([])).toEqual([]);
+    });
+
+    it('returns empty array when input is not an array', () => {
+      expect(validateTasks(null)).toEqual([]);
+      expect(validateTasks(undefined)).toEqual([]);
+      expect(validateTasks({})).toEqual([]);
+      expect(validateTasks('invalid')).toEqual([]);
+    });
+
+    it('returns empty array if any item in the array is invalid', () => {
+      const corruptedList = [
+        validTask,
+        { id: 'corrupted', title: '' },
+      ];
+      expect(validateTasks(corruptedList)).toEqual([]);
+    });
+  });
+});
+
+

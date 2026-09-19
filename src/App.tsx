@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import type { StatusFilter, PriorityFilter } from './types/task';
 import { useTasks } from './hooks/useTasks';
-import { filterTasks } from './lib/filters';
+import { useTaskFilters } from './hooks/useTaskFilters';
 import { Header } from './components/layout/Header';
 import { TaskStats } from './components/dashboard/TaskStats';
 import { TaskForm } from './components/tasks/TaskForm';
@@ -10,25 +8,17 @@ import { TaskList } from './components/tasks/TaskList';
 
 export default function App() {
   const { tasks, addTask, updateTask, toggleTask, deleteTask } = useTasks();
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
-
-  const hasActiveFilters =
-    searchQuery.trim() !== '' || statusFilter !== 'all' || priorityFilter !== 'all';
-
-  const filteredTasks = filterTasks(tasks, {
-    search: searchQuery,
-    status: statusFilter,
-    priority: priorityFilter,
-  });
-
-  const handleResetFilters = () => {
-    setSearchQuery('');
-    setStatusFilter('all');
-    setPriorityFilter('all');
-  };
+  const {
+    searchQuery,
+    statusFilter,
+    priorityFilter,
+    hasActiveFilters,
+    filteredTasks,
+    setSearchQuery,
+    setStatusFilter,
+    setPriorityFilter,
+    resetFilters,
+  } = useTaskFilters(tasks);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-slate-900 selection:text-white">
@@ -56,7 +46,7 @@ export default function App() {
             onSearchChange={setSearchQuery}
             onStatusChange={setStatusFilter}
             onPriorityChange={setPriorityFilter}
-            onResetFilters={handleResetFilters}
+            onResetFilters={resetFilters}
           />
         </section>
 
@@ -66,7 +56,7 @@ export default function App() {
             tasks={filteredTasks}
             totalTasksCount={tasks.length}
             hasActiveFilters={hasActiveFilters}
-            onResetFilters={handleResetFilters}
+            onResetFilters={resetFilters}
             onToggle={toggleTask}
             onUpdate={updateTask}
             onDelete={deleteTask}

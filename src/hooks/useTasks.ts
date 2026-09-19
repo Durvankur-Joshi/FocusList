@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import type { Task, CreateTaskInput, UpdateTaskInput, Priority } from '../types/task';
 import { TASK_STORAGE_KEY, DEFAULT_PRIORITY } from '../constants/task';
 import { useLocalStorage } from './useLocalStorage';
@@ -24,6 +24,12 @@ export function useTasks(): UseTasksReturn {
     [],
     isValidTaskList
   );
+
+  // Keep a mutable ref to tasks for synchronous lookups inside stable callbacks
+  const tasksRef = useRef(tasks);
+  useEffect(() => {
+    tasksRef.current = tasks;
+  }, [tasks]);
 
   const addTask = useCallback(
     (input: CreateTaskInput): Task | null => {
@@ -63,7 +69,7 @@ export function useTasks(): UseTasksReturn {
         return false;
       }
 
-      const target = tasks.find((t) => t.id === id);
+      const target = tasksRef.current.find((t) => t.id === id);
       if (!target) {
         return false;
       }
@@ -121,7 +127,7 @@ export function useTasks(): UseTasksReturn {
 
       return true;
     },
-    [tasks, setTasks]
+    [setTasks]
   );
 
   const toggleTask = useCallback(
@@ -130,7 +136,7 @@ export function useTasks(): UseTasksReturn {
         return false;
       }
 
-      const target = tasks.find((t) => t.id === id);
+      const target = tasksRef.current.find((t) => t.id === id);
       if (!target) {
         return false;
       }
@@ -151,7 +157,7 @@ export function useTasks(): UseTasksReturn {
 
       return true;
     },
-    [tasks, setTasks]
+    [setTasks]
   );
 
   const deleteTask = useCallback(
@@ -160,7 +166,7 @@ export function useTasks(): UseTasksReturn {
         return false;
       }
 
-      const target = tasks.find((t) => t.id === id);
+      const target = tasksRef.current.find((t) => t.id === id);
       if (!target) {
         return false;
       }
@@ -168,7 +174,7 @@ export function useTasks(): UseTasksReturn {
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       return true;
     },
-    [tasks, setTasks]
+    [setTasks]
   );
 
   const clearAllTasks = useCallback((): void => {

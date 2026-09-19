@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, memo, type FormEvent } from 'react';
 import { Pencil, Trash2, Check } from 'lucide-react';
 import type { Task, Priority, UpdateTaskInput } from '../../types/task';
 import {
@@ -21,7 +21,18 @@ const PRIORITY_BADGE_STYLES: Record<Priority, string> = {
   low: 'bg-blue-50 text-blue-700 border-blue-200',
 };
 
-export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) {
+const PRIORITY_GLYPHS: Record<Priority, string> = {
+  high: '▲',
+  medium: '■',
+  low: '▼',
+};
+
+export const TaskItem = memo(function TaskItem({
+  task,
+  onToggle,
+  onUpdate,
+  onDelete,
+}: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editPriority, setEditPriority] = useState<Priority>(task.priority);
@@ -70,7 +81,7 @@ export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) 
 
   if (isEditing) {
     return (
-      <li className="bg-white p-4 rounded-xl border border-slate-300 shadow-sm list-none transition-all">
+      <li className="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-300 shadow-sm list-none transition-all">
         <form
           onSubmit={handleSaveEdit}
           className="space-y-3"
@@ -128,7 +139,7 @@ export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) 
                     setEditPriority(val);
                   }
                 }}
-                className="h-8 px-2.5 py-0.5 border border-slate-300 rounded-md text-xs font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
+                className="h-8.5 px-2.5 py-1 border border-slate-300 rounded-md text-xs font-medium text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
               >
                 {TASK_PRIORITIES.map((p) => (
                   <option key={p} value={p}>
@@ -143,14 +154,14 @@ export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) 
                 type="button"
                 onClick={handleCancelEdit}
                 aria-label={`Cancel editing "${task.title}"`}
-                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer"
+                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 aria-label={`Save changes for "${task.title}"`}
-                className="px-3.5 py-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors cursor-pointer shadow-xs"
+                className="px-3.5 py-1.5 text-xs font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-md transition-colors cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
               >
                 Save
               </button>
@@ -185,7 +196,7 @@ export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) 
           <div className="flex-1 min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span
-                className={`text-sm font-medium break-words leading-snug transition-colors ${
+                className={`text-sm font-medium leading-snug break-words [overflow-wrap:anywhere] transition-colors ${
                   task.completed
                     ? 'line-through text-slate-400'
                     : 'text-slate-900'
@@ -197,11 +208,14 @@ export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) 
 
             <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${
                   PRIORITY_BADGE_STYLES[task.priority]
                 }`}
               >
-                {PRIORITY_LABELS[task.priority]}
+                <span className="text-[9px] leading-none opacity-75" aria-hidden="true">
+                  {PRIORITY_GLYPHS[task.priority]}
+                </span>
+                <span>{PRIORITY_LABELS[task.priority]}</span>
               </span>
 
               {task.completed && (
@@ -219,22 +233,22 @@ export function TaskItem({ task, onToggle, onUpdate, onDelete }: TaskItemProps) 
             type="button"
             onClick={handleStartEdit}
             aria-label={`Edit task: ${task.title}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-md border border-slate-200 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 sm:px-2.5 sm:py-1 gap-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-md border border-slate-200 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
           >
-            <Pencil className="w-3 h-3 text-slate-500" aria-hidden="true" />
+            <Pencil className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-slate-500" aria-hidden="true" />
             <span className="hidden sm:inline">Edit</span>
           </button>
           <button
             type="button"
             onClick={() => onDelete(task.id)}
             aria-label={`Delete task: ${task.title}`}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-rose-600 hover:text-rose-700 bg-rose-50/80 hover:bg-rose-100 rounded-md border border-rose-200/80 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center min-w-[36px] min-h-[36px] sm:min-w-0 sm:min-h-0 sm:px-2.5 sm:py-1 gap-1 text-xs font-medium text-rose-600 hover:text-rose-700 bg-rose-50/80 hover:bg-rose-100 rounded-md border border-rose-200/80 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
-            <Trash2 className="w-3 h-3 text-rose-500" aria-hidden="true" />
+            <Trash2 className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-rose-500" aria-hidden="true" />
             <span className="hidden sm:inline">Delete</span>
           </button>
         </div>
       </div>
     </li>
   );
-}
+});
