@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { TaskList } from '../../src/components/tasks/TaskList';
 import type { Task } from '../../src/types/task';
 
@@ -23,10 +23,11 @@ describe('TaskList Component', () => {
     },
   ];
 
-  it('renders EmptyState when there are no tasks', () => {
+  it('renders EmptyState when there are no tasks in total', () => {
     render(
       <TaskList
         tasks={[]}
+        totalTasksCount={0}
         onToggle={vi.fn()}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
@@ -37,10 +38,35 @@ describe('TaskList Component', () => {
     expect(screen.getByText(/no tasks yet/i)).toBeInTheDocument();
   });
 
+  it('renders empty filter state when tasks exist but active filters yield zero matches', () => {
+    const handleReset = vi.fn();
+    render(
+      <TaskList
+        tasks={[]}
+        totalTasksCount={3}
+        hasActiveFilters={true}
+        onResetFilters={handleReset}
+        onToggle={vi.fn()}
+        onUpdate={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByText(/no tasks match your filters/i)).toBeInTheDocument();
+
+    const resetBtn = screen.getByRole('button', { name: /clear all active filters/i });
+    expect(resetBtn).toBeInTheDocument();
+
+    fireEvent.click(resetBtn);
+    expect(handleReset).toHaveBeenCalledTimes(1);
+  });
+
   it('renders tasks in a semantic unordered list', () => {
     render(
       <TaskList
         tasks={sampleTasks}
+        totalTasksCount={2}
         onToggle={vi.fn()}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}

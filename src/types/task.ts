@@ -19,3 +19,14 @@ export interface UpdateTaskInput {
   priority?: Priority;
   completed?: boolean;
 }
+
+export type StatusFilter = 'all' | 'active' | 'completed';
+
+export type PriorityFilter = 'all' | Priority;
+
+export interface TaskFilters {
+  search: string;
+  status: StatusFilter;
+  priority: PriorityFilter;
+}
+
