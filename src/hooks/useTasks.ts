@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback } from 'react';
 import type { Task, CreateTaskInput, UpdateTaskInput, Priority } from '../types/task';
 import { TASK_STORAGE_KEY, DEFAULT_PRIORITY } from '../constants/task';
 import { useLocalStorage } from './useLocalStorage';
@@ -18,18 +18,16 @@ export interface UseTasksReturn {
   clearAllTasks: () => void;
 }
 
+/**
+ * Domain hook managing canonical task state and mutations.
+ * Employs pure functional state updates without unnecessary refs or synchronization effects.
+ */
 export function useTasks(): UseTasksReturn {
   const [tasks, setTasks] = useLocalStorage<Task[]>(
     TASK_STORAGE_KEY,
     [],
     isValidTaskList
   );
-
-  // Keep a mutable ref to tasks for synchronous lookups inside stable callbacks
-  const tasksRef = useRef(tasks);
-  useEffect(() => {
-    tasksRef.current = tasks;
-  }, [tasks]);
 
   const addTask = useCallback(
     (input: CreateTaskInput): Task | null => {
@@ -69,8 +67,7 @@ export function useTasks(): UseTasksReturn {
         return false;
       }
 
-      const target = tasksRef.current.find((t) => t.id === id);
-      if (!target) {
+      if (!tasks.some((t) => t.id === id)) {
         return false;
       }
 
@@ -127,7 +124,7 @@ export function useTasks(): UseTasksReturn {
 
       return true;
     },
-    [setTasks]
+    [tasks, setTasks]
   );
 
   const toggleTask = useCallback(
@@ -136,8 +133,7 @@ export function useTasks(): UseTasksReturn {
         return false;
       }
 
-      const target = tasksRef.current.find((t) => t.id === id);
-      if (!target) {
+      if (!tasks.some((t) => t.id === id)) {
         return false;
       }
 
@@ -157,7 +153,7 @@ export function useTasks(): UseTasksReturn {
 
       return true;
     },
-    [setTasks]
+    [tasks, setTasks]
   );
 
   const deleteTask = useCallback(
@@ -166,15 +162,14 @@ export function useTasks(): UseTasksReturn {
         return false;
       }
 
-      const target = tasksRef.current.find((t) => t.id === id);
-      if (!target) {
+      if (!tasks.some((t) => t.id === id)) {
         return false;
       }
 
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       return true;
     },
-    [setTasks]
+    [tasks, setTasks]
   );
 
   const clearAllTasks = useCallback((): void => {

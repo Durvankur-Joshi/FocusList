@@ -1,30 +1,12 @@
 import { useState, useCallback } from 'react';
+import { getStorageItem, setStorageItem } from '../lib/storage';
 
 export type SetValue<T> = (value: T | ((prevValue: T) => T)) => void;
 
-function getStorageItem(key: string): string | null {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return null;
-  }
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function setStorageItem(key: string, serializedValue: string): boolean {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return false;
-  }
-  try {
-    window.localStorage.setItem(key, serializedValue);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
+/**
+ * Generic persistence hook connecting React state to the storage infrastructure adapter.
+ * Performs I/O reads strictly during initial state hydration.
+ */
 export function useLocalStorage<T>(
   key: string,
   initialValue: T | (() => T),
@@ -60,11 +42,13 @@ export function useLocalStorage<T>(
             ? (value as (prevValue: T) => T)(currentValue)
             : value;
 
-        try {
-          const serialized = JSON.stringify(resolvedValue);
-          setStorageItem(key, serialized);
-        } catch {
-          // Gracefully ignore serialization errors
+        if (resolvedValue !== currentValue) {
+          try {
+            const serialized = JSON.stringify(resolvedValue);
+            setStorageItem(key, serialized);
+          } catch {
+            // Gracefully ignore serialization errors
+          }
         }
 
         return resolvedValue;
