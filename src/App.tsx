@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { StatusFilter, PriorityFilter } from './types/task';
 import { useTasks } from './hooks/useTasks';
 import { filterTasks } from './lib/filters';
+import { Header } from './components/layout/Header';
 import { TaskStats } from './components/dashboard/TaskStats';
 import { TaskForm } from './components/tasks/TaskForm';
 import { TaskFilters } from './components/tasks/TaskFilters';
@@ -30,16 +31,10 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 py-12 px-4 sm:px-6">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <header className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-            FocusList
-          </h1>
-          <p className="text-slate-600">
-            Focus on what matters.
-          </p>
-        </header>
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased selection:bg-slate-900 selection:text-white">
+      <main className="max-w-2xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 space-y-6 sm:space-y-7">
+        {/* Header */}
+        <Header />
 
         {/* Task Statistics - Always reflects total underlying task collection */}
         <section aria-label="Task statistics section">
@@ -77,7 +72,7 @@ export default function App() {
             onDelete={deleteTask}
           />
         </section>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

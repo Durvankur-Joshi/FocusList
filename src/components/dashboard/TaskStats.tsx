@@ -1,3 +1,4 @@
+import { ListTodo, CheckCircle2, Clock } from 'lucide-react';
 import type { Task } from '../../types/task';
 
 export interface TaskStatsProps {
@@ -13,31 +14,52 @@ export function TaskStats({ tasks }: TaskStatsProps) {
     <div
       role="region"
       aria-label="Task statistics"
-      className="grid grid-cols-3 gap-3 p-4 bg-white rounded-xl border border-slate-200 shadow-sm"
+      className="grid grid-cols-3 gap-3 sm:gap-4"
     >
-      <div className="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-        <dt className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-          Total Tasks
-        </dt>
-        <dd className="mt-1 text-2xl font-bold text-slate-900" aria-label={`Total tasks: ${total}`}>
+      {/* Total Tasks */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200/90 shadow-xs hover:border-slate-300 transition-colors">
+        <div className="flex items-center justify-between gap-1">
+          <dt className="text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
+            Total
+          </dt>
+          <ListTodo className="w-4 h-4 text-slate-400 shrink-0" aria-hidden="true" />
+        </div>
+        <dd
+          className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900"
+          aria-label={`Total tasks: ${total}`}
+        >
           {total}
         </dd>
       </div>
 
-      <div className="text-center p-2 rounded-lg bg-emerald-50/50 border border-emerald-100">
-        <dt className="text-xs font-medium text-emerald-700 uppercase tracking-wider">
-          Completed
-        </dt>
-        <dd className="mt-1 text-2xl font-bold text-emerald-700" aria-label={`Completed tasks: ${completed}`}>
+      {/* Completed Tasks */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-white border border-emerald-200/80 shadow-xs hover:border-emerald-300 transition-colors">
+        <div className="flex items-center justify-between gap-1">
+          <dt className="text-xs font-semibold text-emerald-700 uppercase tracking-wider truncate">
+            Completed
+          </dt>
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />
+        </div>
+        <dd
+          className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-emerald-700"
+          aria-label={`Completed tasks: ${completed}`}
+        >
           {completed}
         </dd>
       </div>
 
-      <div className="text-center p-2 rounded-lg bg-amber-50/50 border border-amber-100">
-        <dt className="text-xs font-medium text-amber-700 uppercase tracking-wider">
-          Pending
-        </dt>
-        <dd className="mt-1 text-2xl font-bold text-amber-700" aria-label={`Pending tasks: ${pending}`}>
+      {/* Pending Tasks */}
+      <div className="flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-white border border-amber-200/80 shadow-xs hover:border-amber-300 transition-colors">
+        <div className="flex items-center justify-between gap-1">
+          <dt className="text-xs font-semibold text-amber-700 uppercase tracking-wider truncate">
+            Pending
+          </dt>
+          <Clock className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
+        </div>
+        <dd
+          className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-amber-700"
+          aria-label={`Pending tasks: ${pending}`}
+        >
           {pending}
         </dd>
       </div>
